@@ -1,5 +1,4 @@
 from settings import *
-#import moderngl as mgl
 import sys
 from entity import *
 from data.scripts.collisions import *
@@ -23,27 +22,32 @@ class App:
         self.is_running = True
         
         self.temp_surf = pg.Surface((8, 16))
-        self.Island_surf = pg.Surface((400, 100))
-        self.Display = pg.Surface((200, 150))
+        self.Island_surf = pg.image.load("data/assets/mainisland-export.png")
+        self.Display = pg.Surface(DISPLAY)
         self.scroll = [0,0,0,0]
+        self.spawn_area = [pg.Rect(-100,0,100,100), pg.Rect(0,0,100,100), pg.Rect(100,0,100,100), pg.Rect(200,0,100,100)]
         
-
+        
     def update(self):
         self.delta_time = self.clock.tick()
         self.time = pg.time.get_ticks() * 0.001
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
-        #print(self.player.hitbox.x, self.player.hitbox.y)
         self.clock.tick(60)
-        
+    
     def render(self):
         self.Display.fill((0,0,0))
+        
+        for spawn in self.spawn_area:
+            spawn.x += self.scroll[0]
+            pg.draw.rect(self.Display, (255,0,0), spawn, 4)
+        
         self.temp_surf.fill((255,255,255))
-        self.Island_surf.fill((255,255,255))
         self.Display.blit(self.temp_surf, (self.player.hitbox.x, self.player.hitbox.y))
         self.Display.blit(self.Island_surf, (self.Island.hitbox.x, self.Island.hitbox.y))
         
         surf = pg.transform.scale(self.Display, WIN_RES)
         self.screen.blit(surf, (0,0))
+        #self.screen.blit(self.Display, (0,0))
         
         pg.display.flip()
 
@@ -88,7 +92,6 @@ class App:
         if self.player.vertical_momentum >= 3:
             self.player.vertical_momentum = 3
         
-        
         self.Island.hitbox.x += self.scroll[0]
         
         # check for platform collision
@@ -99,8 +102,7 @@ class App:
             self.player.air_time = 0
         else:
             self.player.air_time += 1
-        
-        
+       
     def run(self):
         while self.is_running:
             self.handle_events()

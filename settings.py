@@ -5,4 +5,5 @@ import math
 import pygame as pg
 
 WIN_RES = glm.vec2(1600, 1200)
+DISPLAY = [200, 150]
 BG_COLOR = glm.vec3(0.0, 0.0, 0.0)
