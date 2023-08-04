@@ -1,4 +1,4 @@
-from settings import *
+from scripts.settings import *
 
 class Player:
     def __init__(self, height, width, x, y, health, defense, attack, movment):
@@ -32,5 +32,22 @@ class Object:
         self.x = x
         self.y = y
         self.hitbox = pg.Rect(x, y, width, height)
+        
+class PhysicsEntity:
+    def __init__(self, game, entity_type, pos, size):
+        self.game = game
+        self.entity_type = entity_type
+        self.pos = list(pos)
+        self.size = size
+        self.velocity = [0, 0]
+        
+    def update(self, movment=(0, 0)):
+        frame_movment = (movment[0] + self.velocity[0], movment[1] + self.velocity[1])
+        
+        self.pos[0] += frame_movment[0]
+        self.pos[1] += frame_movment[1]
+    
+    def render(self, surf):
+        surf.blit(self.game.assets["player"], self.pos)
     
     
