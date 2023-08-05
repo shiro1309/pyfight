@@ -62,7 +62,6 @@ class App:
         if self.sprint == False and self.sprint_time[1] <= 0.001:
             self.sprint_time[0] = 2
             self.sprint_time[1] = 0
-        print(self.sprint_time)
         
         self.player.update((self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
         
@@ -80,18 +79,29 @@ class App:
         pg.display.flip()
 
     def handle_events(self):
+        
+        if self.player.velocity[0] > 0:
+            self.player.velocity[0] = max(0, self.player.velocity[0] - 0.5 * self.delta_time)
+        elif self.player.velocity[0] < 0:
+            self.player.velocity[0] = min(0, self.player.velocity[0] + 0.5 * self.delta_time)
+        else:
+            self.player.velocity[0] = 0
+        print(self.player.velocity)
+        
         for event in pg.event.get():
             if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
                 self.is_running = False
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_d or event.key == pg.K_RIGHT:
                     self.movment[0] = True
+                    self.player.velocity[0] = .2
                 if event.key == pg.K_w or event.key == pg.K_UP:
                     #if self.player.air_time <= 6:
                     self.movment[1] = True
                     #    self.player.vertical_momentum = -5
                 if event.key == pg.K_a or event.key == pg.K_LEFT:
                     self.movment[2] = True
+                    self.player.velocity[0] = -.2
                 if event.key == pg.K_s or event.key == pg.K_DOWN:
                     self.movment[3] = True
                 if event.key == pg.K_LSHIFT and self.sprint_time[1] <= .001:
@@ -114,9 +124,15 @@ class App:
         if self.movment[0]:
             self.scroll[0] -= 2
             self.scroll[2] -= 2
+            self.player.velocity[0] = -.2
+            if self.sprint:
+                self.player.velocity[0] = -.6
         if self.movment[2]:
             self.scroll[0] += 2
             self.scroll[2] += 2
+            self.player.velocity[0] = .2
+            if self.sprint:
+                self.player.velocity[0] = .6
         
         #self.scroll[1] = self.player.vertical_momentum
         
