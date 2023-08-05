@@ -4,6 +4,6 @@ import glm
 import math
 import pygame as pg
 
-WIN_RES = glm.vec2(1600, 1200)
-DISPLAY = [200, 150]
+WIN_RES = glm.vec2(640*2, 480*2)
+DISPLAY = [320, 240]
 BG_COLOR = glm.vec3(0.0, 0.0, 0.0)

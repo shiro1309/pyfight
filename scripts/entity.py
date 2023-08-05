@@ -41,10 +41,13 @@ class PhysicsEntity:
         self.size = size
         self.velocity = [0, 0]
         
-    def update(self, movment=(0, 0)):
-        frame_movment = (movment[0] + self.velocity[0], movment[1] + self.velocity[1])
+    def update(self, movment=(0, 0), delta=0, sprint=False):
+        sprint_ = 1
+        if sprint:
+            sprint_ = 2
+        frame_movment = ((movment[0] + self.velocity[0]) * 100 * sprint_, (movment[1] + self.velocity[1]) * 100 * sprint_)
         
-        self.pos[0] += frame_movment[0]
+        self.pos[0] += frame_movment[0] * delta
         self.pos[1] += frame_movment[1]
     
     def render(self, surf):

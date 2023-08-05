@@ -15,7 +15,7 @@ class App:
         
         self.screen = pg.display.set_mode(WIN_RES, pg.DOUBLEBUF)
         
-        self.player = Player(16,8, 100, 50, 100, 10, 40, [False, False, False, False])
+        #self.player = Player(16,8, 100, 50, 100, 10, 40, [False, False, False, False])
         self.movment = [False, False, False, False]
         self.player = PhysicsEntity(self, "player", (100,50), (8,16))
         self.Island = Object(-100, 100, 400, 100)
@@ -25,6 +25,9 @@ class App:
         self.time = 0
         
         self.is_running = True
+        self.sprint = False
+        self.sprint_check = False
+        self.sprint_time = [2, 0]
         
         self.assets = {
             "player": load_image("entity/player/player_1.png")
@@ -40,29 +43,39 @@ class App:
         
     def update(self):
         self.clock.tick()
-        self.time = pg.time.get_ticks() * 0.001
+        #self.time = pg.time.get_ticks() * 0.001
 
         self.delta_time = time.time() - self.start_time
         self.start_time = time.time()
         
-        self.player.update(self.movment[1] - self.movment[0], 0)
+        if self.sprint:
+            self.sprint_time[0] -= self.delta_time
+        if self.sprint_time[0] <= 0:
+            self.sprint_time[0] = 0
+            self.sprint = False
+            if self.sprint_check == False:
+                self.sprint_check = True
+                self.sprint_time[1] = .2
+            self.sprint_time[1] -= self.delta_time
+            if self.sprint_time[1] <= 0:
+                self.sprint_time[0] = 0
+        if self.sprint == False and self.sprint_time[1] <= 0.001:
+            self.sprint_time[0] = 2
+            self.sprint_time[1] = 0
+        print(self.sprint_time)
+        
+        self.player.update((self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
     
     def render(self):
-        self.Display.fill((0,0,0))
-        
-        #for spawn in self.spawn_area:
-        #    spawn.x += self.scroll[0]
-        #    pg.draw.rect(self.Display, (255,0,0), spawn, 4)
-        
-        self.temp_surf.fill((255,255,255))
-        #self.Display.blit(self.temp_surf, (self.player.pos[0], self.player.pos[1]))
+        self.Display.fill((100,100,100))
         self.Display.blit(self.Island_surf, (self.Island.hitbox.x, self.Island.hitbox.y))
+        
+        self.player.render(self.Display)
         
         surf = pg.transform.scale(self.Display, WIN_RES)
         self.screen.blit(surf, (0,0))
-        #self.screen.blit(self.Display, (0,0))
         
         pg.display.flip()
 
@@ -81,6 +94,8 @@ class App:
                     self.movment[2] = True
                 if event.key == pg.K_s or event.key == pg.K_DOWN:
                     self.movment[3] = True
+                if event.key == pg.K_LSHIFT and self.sprint_time[1] <= .001:
+                    self.sprint = True
             
             if event.type == pg.KEYUP:
                 if event.key == pg.K_d or event.key == pg.K_RIGHT:
@@ -91,6 +106,8 @@ class App:
                     self.movment[2] = False
                 if event.key == pg.K_s or event.key == pg.K_DOWN:
                     self.movment[3] = False
+                if event.key == pg.K_LSHIFT:
+                    self.sprint = False
         
         
         self.scroll = [0,0,self.scroll[2], self.scroll[3]]
@@ -107,7 +124,7 @@ class App:
         #if self.player.vertical_momentum >= 3:
         #    self.player.vertical_momentum = 3
         
-        self.Island.hitbox.x += self.scroll[0]
+        #self.Island.hitbox.x += self.scroll[0]
         
         # check for platform collision
         #self.player.hitbox, player_collision = move(self.player.hitbox, self.scroll, self.Island.hitbox)
