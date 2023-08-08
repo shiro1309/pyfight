@@ -15,7 +15,6 @@ class App:
         
         self.screen = pg.display.set_mode(WIN_RES, pg.DOUBLEBUF)
         
-        #self.player = Player(16,8, 100, 50, 100, 10, 40, [False, False, False, False])
         self.movment = [False, False, False, False]
         self.player = PhysicsEntity(self, "player", (100,50), (8,16))
         self.Island = Object(-100, 100, 400, 100)
