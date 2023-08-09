@@ -1,37 +1,4 @@
 from scripts.settings import *
-
-class Player:
-    def __init__(self, height, width, x, y, health, defense, attack, movment):
-        self.height = height
-        self.width = width
-        self.x = x
-        self.y = y
-        self.health = health
-        self.defense = defense
-        self.attack = attack
-        self.movment = movment
-        self.hitbox = pg.Rect(x, y, width, height)
-        self.vertical_momentum = 3
-        self.air_time = 6
-
-class Enemy:
-    def __init__(self, height, width, x, y, health, defense, attack):
-        self.height = height
-        self.width = width
-        self.x = x
-        self.y = y
-        self.health = health
-        self.defense = defense
-        self.attack = attack
-        self.hitbox = pg.Rect(x, y, width, height)
-
-class Object:
-    def __init__(self, x, y, width, height):
-        self.height = height
-        self.width = width
-        self.x = x
-        self.y = y
-        self.hitbox = pg.Rect(x, y, width, height)
         
 class PhysicsEntity:
     def __init__(self, game, entity_type, pos, size):
@@ -40,16 +7,47 @@ class PhysicsEntity:
         self.pos = list(pos)
         self.size = size
         self.velocity = [0, 0]
+        self.collisions = {"up": False, "down": False, "left": False, "right": False}
         
-    def update(self, movment=(0, 0), delta=0, sprint=False):
+    def rect(self):
+        return pg.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
+        
+    def update(self, tilemap, movment=(0, 0), delta=0, sprint=False):
+        self.collisions = {"up": False, "down": False, "left": False, "right": False}
+        
         sprint_ = 1
         if sprint:
             sprint_ = 2
-        frame_movment = ((movment[0] + self.velocity[0]) * 100 * sprint_, (movment[1] + self.velocity[1]) * 100 * sprint_)
+        frame_movment = ((movment[0] + self.velocity[0]) * 100 * sprint_, (movment[1] + self.velocity[1]) * 100)
+        
         
         self.pos[0] += frame_movment[0] * delta
+        entity_rect = self.rect()
+        for rect in tilemap.physics_rects_around(self.pos):
+            if entity_rect.colliderect(rect):
+                if frame_movment[0] > 0:
+                    entity_rect.right = rect.left
+                    self.collisions["right"] = True
+                if frame_movment[0] < 0:
+                    entity_rect.left = rect.right
+                    self.collisions["left"] = True
+                self.pos[0] = entity_rect.x
+        
         self.pos[1] += frame_movment[1]
+        entity_rect = self.rect()
+        for rect in tilemap.physics_rects_around(self.pos):
+            if entity_rect.colliderect(rect):
+                if frame_movment[1] > 0:
+                    entity_rect.bottom = rect.top
+                    self.collisions["dwon"] = True
+                if frame_movment[1] < 0:
+                    entity_rect.top = rect.bottom
+                    self.collisions["up"] = True
+                self.pos[1] = entity_rect.y
+                
     
+        self.velocity[1] = min(5, self.velocity[1] + 0.1) * delta * 10
+        
     def render(self, surf):
         surf.blit(self.game.assets[self.entity_type], self.pos)
     

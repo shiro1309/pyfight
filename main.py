@@ -4,7 +4,8 @@ import time
 from scripts.settings import *
 from scripts.entity import *
 from scripts.collisions import *
-from scripts.utils import load_image
+from scripts.utils import load_image, load_images
+from scripts.tilemap import Tilemap
 
 class App:
     
@@ -29,8 +30,12 @@ class App:
         self.sprint_time = [2, 0]
         
         self.assets = {
-            "player": load_image("entity/player/player_1.png")
+            "player": load_image("entity/player/player_1.png"),
+            "grass": load_images("tile/grass"),
+            "dirt": load_images("tile/dirt"),
         }
+        
+        self.tilemap = Tilemap(self, tile_size=16)
         
         self.temp_surf = pg.Surface((8, 16))
         self.Island_surf = pg.image.load("data/assets/land/mainisland-export.png").convert()
@@ -62,14 +67,16 @@ class App:
             self.sprint_time[0] = 2
             self.sprint_time[1] = 0
         
-        self.player.update((self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
+        self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
+        
+        print(self.tilemap.physics_rects_around(self.player.pos))
     
     def render(self):
         self.Display.fill((100,100,100))
-        self.Display.blit(self.Island_surf, (self.Island.hitbox.x, self.Island.hitbox.y))
-        
+        #self.Display.blit(self.Island_surf, (self.Island.hitbox.x, self.Island.hitbox.y))
+        self.tilemap.render(self.Display)
         self.player.render(self.Display)
         
         surf = pg.transform.scale(self.Display, WIN_RES)
@@ -85,21 +92,20 @@ class App:
             self.player.velocity[0] = min(0, self.player.velocity[0] + 0.5 * self.delta_time)
         else:
             self.player.velocity[0] = 0
-        print(self.player.velocity)
         
         for event in pg.event.get():
             if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
                 self.is_running = False
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_d or event.key == pg.K_RIGHT:
-                    self.movment[0] = True
+                    self.movment[2] = True
                     self.player.velocity[0] = .2
                 if event.key == pg.K_w or event.key == pg.K_UP:
                     #if self.player.air_time <= 6:
                     self.movment[1] = True
                     #    self.player.vertical_momentum = -5
                 if event.key == pg.K_a or event.key == pg.K_LEFT:
-                    self.movment[2] = True
+                    self.movment[0] = True
                     self.player.velocity[0] = -.2
                 if event.key == pg.K_s or event.key == pg.K_DOWN:
                     self.movment[3] = True
@@ -108,11 +114,11 @@ class App:
             
             if event.type == pg.KEYUP:
                 if event.key == pg.K_d or event.key == pg.K_RIGHT:
-                    self.movment[0] = False
+                    self.movment[2] = False
                 if event.key == pg.K_w or event.key == pg.K_UP:
                     self.movment[1] = False
                 if event.key == pg.K_a or event.key == pg.K_LEFT:
-                    self.movment[2] = False
+                    self.movment[0] = False
                 if event.key == pg.K_s or event.key == pg.K_DOWN:
                     self.movment[3] = False
                 if event.key == pg.K_LSHIFT:
