@@ -1,5 +1,5 @@
 NEIGHBOR_OFFSETS = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (0, 0), (-1, 1), (0, 1), (1, 1)]
-PHYSICS_TILES = {"grass", "stone"} # python set
+PHYSICS_TILES = {"grass", "dirt"} # python set
 
 from scripts.settings import *
 
@@ -13,7 +13,6 @@ class Tilemap:
         for i in range(10):
             self.tilemap[str(3+i)+ ";10"] = {"type": "grass", "variant": 0, "pos": (3+i, 10)}
             self.tilemap["10;"+ str(5+i)] = {"type": "dirt", "variant": 0, "pos": (10, 5+i)}
-        print(self.tilemap)
         
     def tiles_around(self, pos):
         tiles = []

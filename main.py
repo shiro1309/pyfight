@@ -18,7 +18,6 @@ class App:
         
         self.movment = [False, False, False, False]
         self.player = PhysicsEntity(self, "player", (100,50), (8,16))
-        self.Island = Object(-100, 100, 400, 100)
         
         self.clock = pg.time.Clock()
         self.delta_time = 0
@@ -41,7 +40,7 @@ class App:
         self.Island_surf = pg.image.load("data/assets/land/mainisland-export.png").convert()
         self.Display = pg.Surface(DISPLAY)
         self.scroll = [0,0,0,0]
-        self.spawn_area = [pg.Rect(-100,0,100,100), pg.Rect(0,0,100,100), pg.Rect(100,0,100,100), pg.Rect(200,0,100,100)]
+        #self.spawn_area = [pg.Rect(-100,0,100,100), pg.Rect(0,0,100,100), pg.Rect(100,0,100,100), pg.Rect(200,0,100,100)]
         self.start_time = time.time()
         
         
@@ -70,8 +69,6 @@ class App:
         self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
-        
-        print(self.tilemap.physics_rects_around(self.player.pos))
     
     def render(self):
         self.Display.fill((100,100,100))
@@ -103,7 +100,7 @@ class App:
                 if event.key == pg.K_w or event.key == pg.K_UP:
                     #if self.player.air_time <= 6:
                     self.movment[1] = True
-                    #    self.player.vertical_momentum = -5
+                    self.player.velocity[1] = -5
                 if event.key == pg.K_a or event.key == pg.K_LEFT:
                     self.movment[0] = True
                     self.player.velocity[0] = -.2
