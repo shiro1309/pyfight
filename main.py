@@ -6,6 +6,7 @@ from scripts.entity import *
 from scripts.collisions import *
 from scripts.utils import load_image, load_images
 from scripts.tilemap import Tilemap
+from scripts.clouds import Clouds
 
 class App:
     
@@ -17,30 +18,31 @@ class App:
         self.screen = pg.display.set_mode(WIN_RES, pg.DOUBLEBUF)
         
         self.movment = [False, False, False, False]
-        self.player = PhysicsEntity(self, "player", (100,50), (8,16))
         
         self.clock = pg.time.Clock()
         self.delta_time = 0
-        self.time = 0
         
-        self.is_running = True
+        
         self.sprint = False
         self.sprint_check = False
         self.sprint_time = [2, 0]
         
         self.assets = {
             "player": load_image("entity/player/player_1.png"),
+            "clouds": load_images("clouds"),
             "grass": load_images("tile/grass"),
             "dirt": load_images("tile/dirt"),
         }
         
+        self.clouds = Clouds(self.assets["clouds"], count=16)
+        
+        self.player = PhysicsEntity(self, "player", (100,50), (8,16))
+        
         self.tilemap = Tilemap(self, tile_size=16)
         
-        self.temp_surf = pg.Surface((8, 16))
-        self.Island_surf = pg.image.load("data/assets/land/mainisland-export.png").convert()
         self.Display = pg.Surface(DISPLAY)
-        self.scroll = [0,0,0,0]
-        #self.spawn_area = [pg.Rect(-100,0,100,100), pg.Rect(0,0,100,100), pg.Rect(100,0,100,100), pg.Rect(200,0,100,100)]
+        self.scroll = [0,0]
+        
         self.start_time = time.time()
         
         
@@ -67,14 +69,21 @@ class App:
             self.sprint_time[1] = 0
         
         self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
+        self.clouds.update(self.delta_time)
+        
+        self.scroll[0] += (self.player.rect().centerx - self.Display.get_width() / 2 - self.scroll[0]) * self.delta_time * 3
+        self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1]) * self.delta_time * 3
+        self.render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
+        
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
     
     def render(self):
         self.Display.fill((100,100,100))
         #self.Display.blit(self.Island_surf, (self.Island.hitbox.x, self.Island.hitbox.y))
-        self.tilemap.render(self.Display)
-        self.player.render(self.Display)
+        self.clouds.render(self.Display, offset=self.render_scroll)
+        self.tilemap.render(self.Display, offset=self.render_scroll)
+        self.player.render(self.Display, offset=self.render_scroll)
         
         surf = pg.transform.scale(self.Display, WIN_RES)
         self.screen.blit(surf, (0,0))
@@ -122,38 +131,18 @@ class App:
                     self.sprint = False
         
         
-        self.scroll = [0,0,self.scroll[2], self.scroll[3]]
         if self.movment[0]:
-            self.scroll[0] -= 2
-            self.scroll[2] -= 2
             self.player.velocity[0] = -.2
             if self.sprint:
                 self.player.velocity[0] = -.6
         if self.movment[2]:
-            self.scroll[0] += 2
-            self.scroll[2] += 2
             self.player.velocity[0] = .2
             if self.sprint:
                 self.player.velocity[0] = .6
-        
-        #self.scroll[1] = self.player.vertical_momentum
-        
-        #self.player.vertical_momentum += self.G
-        #if self.player.vertical_momentum >= 3:
-        #    self.player.vertical_momentum = 3
-        
-        #self.Island.hitbox.x += self.scroll[0]
-        
-        # check for platform collision
-        #self.player.hitbox, player_collision = move(self.player.hitbox, self.scroll, self.Island.hitbox)
-        
-        #if player_collision["bottom"]:
-        #    self.player.vertical_momentum = 0
-        #    self.player.air_time = 0
-        #else:
-        #    self.player.air_time += 1
        
     def run(self):
+        self.is_running = True
+        
         while self.is_running:
             self.handle_events()
             self.update()

@@ -10,7 +10,7 @@ class PhysicsEntity:
         self.collisions = {"up": False, "down": False, "left": False, "right": False}
         
     def rect(self):
-        return pg.FRect(self.pos[0], self.pos[1], self.size[0], self.size[1])
+        return pg.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
         
     def update(self, tilemap, movment=(0, 0), delta=0, sprint=False):
         self.collisions = {"up": False, "down": False, "left": False, "right": False}
@@ -49,11 +49,9 @@ class PhysicsEntity:
         
         if self.collisions["down"] or self.collisions["up"]:
             self.velocity[1] = 0
-        print(self.collisions)
-    
-        print(self.velocity)
+            
         
-    def render(self, surf):
-        surf.blit(self.game.assets[self.entity_type], self.pos)
+    def render(self, surf, offset=(0, 0)):
+        surf.blit(self.game.assets[self.entity_type], (int(self.pos[0]) - offset[0], int(self.pos[1]) - offset[1]))
     
     
