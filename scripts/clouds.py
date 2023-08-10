@@ -28,5 +28,7 @@ class Clouds:
             cloud.update(delta)
             
     def render(self, surf, offset=(0, 0)):
+        n = 0
         for cloud in self.clouds:
+            n += 1
             cloud.render(surf, offset=offset)

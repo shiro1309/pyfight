@@ -7,12 +7,8 @@ class Tilemap:
     def __init__(self, game, tile_size=16):
         self.game = game
         self.tile_size = tile_size
-        self.tilemap = {}
+        self.tilemap = self.game.tilemap
         self.offgrid_tiles = []
-        
-        for i in range(10):
-            self.tilemap[str(3+i)+ ";10"] = {"type": "grass", "variant": 0, "pos": (3+i, 10)}
-            self.tilemap["10;"+ str(5+i)] = {"type": "dirt", "variant": 0, "pos": (10, 5+i)}
         
     def tiles_around(self, pos):
         tiles = []

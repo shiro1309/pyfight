@@ -3,15 +3,11 @@ import time
 
 from scripts.settings import *
 from scripts.entity import *
-from scripts.collisions import *
-from scripts.utils import load_image, load_images
+from scripts.utils import load_image, load_images, Map_creation
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 
 class App:
-    
-    G = .2
-    
     def __init__(self):
         pg.init()
         
@@ -34,7 +30,10 @@ class App:
             "dirt": load_images("tile/dirt"),
         }
         
-        self.clouds = Clouds(self.assets["clouds"], count=16)
+        self.map = Map_creation("map/map.png")
+        self.tilemap = self.map.map_extraction()
+        
+        self.clouds = Clouds(self.assets["clouds"], count=100)
         
         self.player = PhysicsEntity(self, "player", (100,50), (8,16))
         
@@ -42,13 +41,14 @@ class App:
         
         self.Display = pg.Surface(DISPLAY)
         self.scroll = [0,0]
+        self.animation_sum = 0.0
         
         self.start_time = time.time()
         
         
     def update(self):
         self.clock.tick()
-        #self.time = pg.time.get_ticks() * 0.001
+        self.time = pg.time.get_ticks() * 0.001
 
         self.delta_time = time.time() - self.start_time
         self.start_time = time.time()
@@ -75,6 +75,9 @@ class App:
         self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1]) * self.delta_time * 3
         self.render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
         
+        self.animation_sum += self.delta_time
+        if self.animation_sum >= 0.0417:
+            self.animation_sum = 0
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
     
