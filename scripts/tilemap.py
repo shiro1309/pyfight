@@ -24,7 +24,7 @@ class Tilemap:
         rects = []
         for tile in self.tiles_around(pos):
             if tile["type"] in PHYSICS_TILES:
-                rects.append(pg.Rect(tile["pos"][0] * self.tile_size, tile["pos"][1] * self.tile_size, self.tile_size, self.tile_size))
+                rects.append(pg.FRect(tile["pos"][0] * self.tile_size, tile["pos"][1] * self.tile_size, self.tile_size, self.tile_size))
         return rects
         
     def render(self, surf, offset=(0, 0)):

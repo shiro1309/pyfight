@@ -16,8 +16,7 @@ class App:
         self.movment = [False, False, False, False]
         
         self.clock = pg.time.Clock()
-        self.delta_time = 0
-        
+        self.delta_time = 0.0
         
         self.sprint = False
         self.sprint_check = False
@@ -45,9 +44,8 @@ class App:
         
         self.start_time = time.time()
         
-        
     def update(self):
-        self.clock.tick()
+        self.clock.tick(10)
         self.time = pg.time.get_ticks() * 0.001
 
         self.delta_time = time.time() - self.start_time
@@ -76,14 +74,14 @@ class App:
         self.render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
         
         self.animation_sum += self.delta_time
-        if self.animation_sum >= 0.0417:
+        if self.animation_sum >= 0.0208:
             self.animation_sum = 0
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
     
     def render(self):
         self.Display.fill((100,100,100))
-        #self.Display.blit(self.Island_surf, (self.Island.hitbox.x, self.Island.hitbox.y))
+        
         self.clouds.render(self.Display, offset=self.render_scroll)
         self.tilemap.render(self.Display, offset=self.render_scroll)
         self.player.render(self.Display, offset=self.render_scroll)

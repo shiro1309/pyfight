@@ -8,7 +8,8 @@ class Cloud:
         self.depth = depth
         
     def update(self, delta):
-        self.pos[0] += self.speed * delta * 100
+        self.pos[0] += self.speed
+        #* delta * 100
 
     def render(self, surf, offset=(0, 0)):
         render_pos = (self.pos[0] - offset[0] * self.depth, self.pos[1] - offset[1] * self.depth)
