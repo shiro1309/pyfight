@@ -27,13 +27,14 @@ class App:
             "clouds": load_images("clouds"),
             "grass": load_images("tile/grass"),
             "dirt": load_images("tile/dirt"),
+            "vine": load_images("tile/vine"),
         }
         
         self.map = Map_creation("map/map.png")
         self.tilemap = self.map.map_extraction()
         
-        self.clouds = Clouds(self.assets["clouds"], count=100)
-        
+        self.clouds = Clouds(self.assets["clouds"], count=20)
+                
         self.player = PhysicsEntity(self, "player", (100,50), (8,16))
         
         self.tilemap = Tilemap(self, tile_size=16)

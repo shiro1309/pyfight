@@ -4,4 +4,4 @@ import pygame as pg
 import os
 
 WIN_RES = (640*2, 480*2)
-DISPLAY = [320*2, 240*2]
+DISPLAY = [320, 240]
