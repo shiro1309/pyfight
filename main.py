@@ -45,7 +45,7 @@ class App:
         self.start_time = time.time()
         
     def update(self):
-        self.clock.tick(10)
+        self.clock.tick()
         self.time = pg.time.get_ticks() * 0.001
 
         self.delta_time = time.time() - self.start_time
@@ -69,9 +69,9 @@ class App:
         self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
         self.clouds.update(self.delta_time)
         
-        self.scroll[0] += (self.player.rect().centerx - self.Display.get_width() / 2 - self.scroll[0]) * self.delta_time * 3
-        self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1]) * self.delta_time * 3
-        self.render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
+        self.scroll[0] += (self.player.rect().centerx - self.Display.get_width() / 2 - self.scroll[0])
+        self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1])
+        self.render_scroll = (int(round(self.scroll[0], 0)), int(round(self.scroll[1], 0)))
         
         self.animation_sum += self.delta_time
         if self.animation_sum >= 0.0208:
@@ -130,8 +130,7 @@ class App:
                     self.movment[3] = False
                 if event.key == pg.K_LSHIFT:
                     self.sprint = False
-        
-        
+                    
         if self.movment[0]:
             self.player.velocity[0] = -.2
             if self.sprint:

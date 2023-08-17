@@ -15,10 +15,11 @@ class PhysicsEntity:
     def update(self, tilemap, movment=(0, 0), delta=0, sprint=False):
         self.collisions = {"up": False, "down": False, "left": False, "right": False}
         
+        frame_movment = list(((movment[0] + self.velocity[0]), (movment[1] + self.velocity[1])))
+        
         sprint_ = 1
         if sprint:
             sprint_ = 2
-        frame_movment = list(((movment[0] + self.velocity[0]), (movment[1] + self.velocity[1])))
         
         self.pos[0] += frame_movment[0] * delta * 100 * sprint_
         entity_rect = self.rect()
@@ -30,7 +31,7 @@ class PhysicsEntity:
                 if frame_movment[0] < 0:
                     entity_rect.left = rect.right
                     self.collisions["left"] = True
-                self.pos[0] = entity_rect.x
+                self.pos[0] = round(entity_rect.x, 0)
         
         self.pos[1] += frame_movment[1] * delta * 100
         entity_rect = self.rect()
@@ -42,7 +43,8 @@ class PhysicsEntity:
                 if frame_movment[1] < 0:
                     entity_rect.top = rect.bottom
                     self.collisions["up"] = True
-                self.pos[1] = entity_rect.y
+                self.pos[1] = round(entity_rect.y, 0)
+        print(self.pos)
         
         if self.collisions["down"] or self.collisions["up"]:
             self.velocity[1] = 0
