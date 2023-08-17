@@ -8,11 +8,10 @@ class Cloud:
         self.depth = depth
         
     def update(self, delta):
-        self.pos[0] += self.speed
-        #* delta * 100
+        self.pos[0] += self.speed * delta * 100
 
     def render(self, surf, offset=(0, 0)):
-        render_pos = (self.pos[0] - offset[0] * self.depth, self.pos[1] - offset[1] * self.depth)
+        render_pos = (round(self.pos[0] - offset[0] * self.depth, 0), round(self.pos[1] - offset[1] * self.depth, 0))
         surf.blit(self.img, (render_pos[0] % (surf.get_width() + self.img.get_width()) - self.img.get_width(), render_pos[1] % (surf.get_height() + self.img.get_height()) - self.img.get_height()))
         
 class Clouds:

@@ -33,9 +33,9 @@ class Map_creation:
                     tilemap[str(x) + ";" + str(y)] = {"type": "dirt", "variant": 0, "pos": (x,y)}
                 if self.image.getpixel(cord) == (0, 255, 0, 255):
                     tilemap[str(x) + ";" + str(y)] = {"type": "vine", "variant": 0, "pos": (x,y)}
-        return tilemap    
+        return tilemap
 
-class Animations:
+class Animation:
     def __init__(self, images, image_dur=5, loop=True):
         self.images = images
         self.loop = loop
@@ -44,13 +44,15 @@ class Animations:
         self.frame = 0
         
     def copy(self):
-        return Animations(self.images, self.image_duration, self.loop)
+        return Animation(self.images, self.image_duration, self.loop)
     
     def update(self):
         if self.loop:
             self.frame = (self.frame + 1) % (self.image_duration * len(self.images))
         else:
             self.frame = min(self.frame + 1, self.image_duration * len(self.images))
+            if self.frame >= self.image_duration * len(self.images) - 1:
+                self.done = True
     
     def img(self):
         return self.images[int(self.frame / self.image_duration)]

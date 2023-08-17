@@ -3,7 +3,7 @@ import time
 
 from scripts.settings import *
 from scripts.entity import *
-from scripts.utils import load_image, load_images, Map_creation
+from scripts.utils import load_image, load_images, Map_creation, Animation
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 
@@ -23,19 +23,24 @@ class App:
         self.sprint_time = [2, 0]
         
         self.assets = {
-            "player": load_image("entity/player/player_1.png"),
+            "player": load_image("entity/player/player_13.png"),
             "clouds": load_images("clouds"),
             "grass": load_images("tile/grass"),
             "dirt": load_images("tile/dirt"),
             "vine": load_images("tile/vine"),
+            "player/idle": Animation(load_images("entity/player/idle"), image_dur=3),
+            "player/run" : Animation(load_images("entity/player/run"), image_dur= 2),
+            "player/death" : Animation(load_images("entity/player/death"), image_dur=12),
+            "player/jump" : Animation(load_images("entity/player/jump")),
         }
+        
         
         self.map = Map_creation("map/map.png")
         self.tilemap = self.map.map_extraction()
         
         self.clouds = Clouds(self.assets["clouds"], count=20)
                 
-        self.player = PhysicsEntity(self, "player", (100,50), (8,16))
+        self.player = Player(self, (100,50), (8,16))
         
         self.tilemap = Tilemap(self, tile_size=16)
         
@@ -46,7 +51,7 @@ class App:
         self.start_time = time.time()
         
     def update(self):
-        self.clock.tick()
+        self.clock.tick(60)
         self.time = pg.time.get_ticks() * 0.001
 
         self.delta_time = time.time() - self.start_time
@@ -74,9 +79,6 @@ class App:
         self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1])
         self.render_scroll = (int(round(self.scroll[0], 0)), int(round(self.scroll[1], 0)))
         
-        self.animation_sum += self.delta_time
-        if self.animation_sum >= 0.0208:
-            self.animation_sum = 0
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
     
@@ -109,9 +111,9 @@ class App:
                     self.movment[2] = True
                     self.player.velocity[0] = .2
                 if event.key == pg.K_w or event.key == pg.K_UP:
-                    #if self.player.air_time <= 6:
-                    self.movment[1] = True
-                    self.player.velocity[1] = -5
+                    if self.player.air_time <= 6:
+                        self.movment[1] = True
+                        self.player.velocity[1] = -5
                 if event.key == pg.K_a or event.key == pg.K_LEFT:
                     self.movment[0] = True
                     self.player.velocity[0] = -.2
