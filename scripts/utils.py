@@ -31,12 +31,27 @@ class Map_creation:
                     tilemap[str(x) + ";" + str(y)] = {"type": "grass", "variant": 0, "pos": (x,y)}
                 if self.image.getpixel(cord) == (0, 0, 0, 255):
                     tilemap[str(x) + ";" + str(y)] = {"type": "dirt", "variant": 0, "pos": (x,y)}
+                if self.image.getpixel(cord) == (0, 255, 0, 255):
+                    tilemap[str(x) + ";" + str(y)] = {"type": "vine", "variant": 0, "pos": (x,y)}
         return tilemap    
 
 class Animations:
     def __init__(self, images, image_dur=5, loop=True):
         self.images = images
         self.loop = loop
-        self.image_dur = image_dur
+        self.image_duration = image_dur
         self.done = False
         self.frame = 0
+        
+    def copy(self):
+        return Animations(self.images, self.image_duration, self.loop)
+    
+    def update(self):
+        if self.loop:
+            self.frame = (self.frame + 1) % (self.image_duration * len(self.images))
+        else:
+            self.frame = min(self.frame + 1, self.image_duration * len(self.images))
+    
+    def img(self):
+        return self.images[int(self.frame / self.image_duration)]
+    
