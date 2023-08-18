@@ -34,15 +34,16 @@ class App:
             "player/jump" : Animation(load_images("entity/player/jump")),
         }
         
-        
         self.map = Map_creation("map/map.png")
         self.tilemap = self.map.map_extraction()
+        print(self.tilemap)
         
         self.clouds = Clouds(self.assets["clouds"], count=20)
                 
         self.player = Player(self, (100,50), (8,16))
         
         self.tilemap = Tilemap(self, tile_size=16)
+        print(self.tilemap)
         
         self.Display = pg.Surface(DISPLAY)
         self.scroll = [0,0]
@@ -72,13 +73,19 @@ class App:
             self.sprint_time[0] = 2
             self.sprint_time[1] = 0
         
+        if self.player.velocity[0] > 0:
+            self.player.velocity[0] = max(0, self.player.velocity[0] - 0.5 * self.delta_time)
+        elif self.player.velocity[0] < 0:
+            self.player.velocity[0] = min(0, self.player.velocity[0] + 0.5 * self.delta_time)
+        else:
+            self.player.velocity[0] = 0
+        
         self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
         self.clouds.update(self.delta_time)
         
         self.scroll[0] += (self.player.rect().centerx - self.Display.get_width() / 2 - self.scroll[0])
         self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1])
         self.render_scroll = (int(round(self.scroll[0], 0)), int(round(self.scroll[1], 0)))
-        
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
     
@@ -95,13 +102,6 @@ class App:
         pg.display.flip()
 
     def handle_events(self):
-        
-        if self.player.velocity[0] > 0:
-            self.player.velocity[0] = max(0, self.player.velocity[0] - 0.5 * self.delta_time)
-        elif self.player.velocity[0] < 0:
-            self.player.velocity[0] = min(0, self.player.velocity[0] + 0.5 * self.delta_time)
-        else:
-            self.player.velocity[0] = 0
         
         for event in pg.event.get():
             if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):

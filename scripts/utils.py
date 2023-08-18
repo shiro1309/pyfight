@@ -57,3 +57,13 @@ class Animation:
     def img(self):
         return self.images[int(self.frame / self.image_duration)]
     
+class Paralax:
+    def __init__(self, path, scroll, layers=5):
+        pass
+    
+    def update(self):
+        pass
+
+    def render(self):
+        pass
+    

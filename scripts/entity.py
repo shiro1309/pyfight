@@ -13,6 +13,7 @@ class PhysicsEntity:
         self.animate_offset = (-3, 0)
         self.flip = False
         self.set_action("idle")
+        self.frame_rate = 1 / 48
         
     def rect(self):
         return pg.FRect(self.pos[0], self.pos[1], self.size[0], self.size[1])
@@ -66,7 +67,7 @@ class PhysicsEntity:
         self.velocity[1] = min(6, self.velocity[1] + 0.1*delta*100)
         
         self.game.animation_sum += self.game.delta_time
-        if self.game.animation_sum >= 0.0208:
+        if self.game.animation_sum >= self.frame_rate:
             self.game.animation_sum = 0
             self.animation.update()
         
@@ -84,7 +85,6 @@ class Player(PhysicsEntity):
         self.movment = movment
         
         self.air_time += 1 * delta / 0.0167
-        print(self.air_time)
         
         if self.collisions["down"]:
             self.air_time = 0
