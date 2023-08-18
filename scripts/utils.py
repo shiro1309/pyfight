@@ -58,12 +58,32 @@ class Animation:
         return self.images[int(self.frame / self.image_duration)]
     
 class Paralax:
-    def __init__(self, path, scroll, layers=5):
-        pass
+    def __init__(self, path, layers=5):
+        self.layers = layers
+        self.images = load_images(path)
+        self.layer_loc = []
+        self.bg_width = self.images[0].get_width()
+        self.scroll = 0
+        for i in range(layers):
+            self.layer_loc.append([0,0])
+        print(self.layer_loc)
+        
+        
+    def update(self, direction, delta):
+        speed = 1
+        self.scroll += direction
+        for i , layer_pos in enumerate(self.layer_loc):
+            layer_pos[0] += speed * delta * direction * 10
+            speed += 0.2
+        if abs(self.scroll) >= self.bg_width:
+            self.scroll = 0
+        if abs(self.scroll) >= self.bg_width - (self.bg_width * 2):
+            self.scroll = 0
     
-    def update(self):
-        pass
-
-    def render(self):
-        pass
+    def render(self, surface):
+        for layer in range(self.layers):
+            tiles = math.ceil(DISPLAY[0] / self.bg_width) + 2
+            for i in range(tiles):
+                surface.blit(self.images[layer],(round(self.layer_loc[layer][0] + ((i - 1) * self.bg_width) + self.scroll - self.bg_width, 0), 0))
+        
     

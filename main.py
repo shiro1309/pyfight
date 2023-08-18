@@ -3,7 +3,7 @@ import time
 
 from scripts.settings import *
 from scripts.entity import *
-from scripts.utils import load_image, load_images, Map_creation, Animation
+from scripts.utils import load_image, load_images, Map_creation, Animation, Paralax
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 
@@ -36,9 +36,11 @@ class App:
         
         self.map = Map_creation("map/map.png")
         self.tilemap = self.map.map_extraction()
-        print(self.tilemap)
         
-        self.clouds = Clouds(self.assets["clouds"], count=20)
+        self.paralax = Paralax("paralax", 4)
+        print(self.paralax.images)
+        
+        self.clouds = Clouds(self.assets["clouds"], count=0)
                 
         self.player = Player(self, (100,50), (8,16))
         
@@ -81,6 +83,7 @@ class App:
             self.player.velocity[0] = 0
         
         self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
+        self.paralax.update(self.movment[0] - self.movment[2], self.delta_time)
         self.clouds.update(self.delta_time)
         
         self.scroll[0] += (self.player.rect().centerx - self.Display.get_width() / 2 - self.scroll[0])
@@ -90,14 +93,16 @@ class App:
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
     
     def render(self):
-        self.Display.fill((100,100,100))
+        self.Display.fill((0,0,0))
         
+        self.paralax.render(self.Display)
         self.clouds.render(self.Display, offset=self.render_scroll)
         self.tilemap.render(self.Display, offset=self.render_scroll)
         self.player.render(self.Display, offset=self.render_scroll)
         
         surf = pg.transform.scale(self.Display, WIN_RES)
-        self.screen.blit(surf, (0,0))
+        #self.screen.blit(surf, (0,0))
+        self.screen.blit(pg.transform.flip(surf, False, False), (0,0))
         
         pg.display.flip()
 
