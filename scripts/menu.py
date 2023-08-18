@@ -4,6 +4,7 @@ class Menu:
     def __init__(self, game, surface):
         self.game = game
         self.surface = surface
+        self.menu_active = True
         
     def update(self):
         pass
@@ -12,11 +13,15 @@ class Menu:
         pass
     
     def event_handler(self):
-        pass
+        for event in pg.event.get():
+                
+            if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+                self.running = False
 
     def run(self):
         self.running = True
-        while self.running:
-            self.event_handler()
-            self.update()
-            self.render()
+        if self.menu_active:
+            while self.running:
+                self.event_handler()
+                self.update()
+                self.render()

@@ -12,6 +12,7 @@ class App:
         pg.init()
         
         self.screen = pg.display.set_mode(WIN_RES, pg.DOUBLEBUF)
+        self.Display = pg.Surface(DISPLAY)
         
         self.movment = [False, False, False, False]
         
@@ -34,36 +35,37 @@ class App:
             "player/jump" : Animation(load_images("entity/player/jump")),
         }
         
+        self.menu = Menu(self, self.Display)
+        self.menu_active = False
+        
         self.map = Map_creation("map/map.png")
         self.tilemap = self.map.map_extraction()
         
         self.paralax = Paralax("paralax", 4)
-        print(self.paralax.images)
         
         self.clouds = Clouds(self.assets["clouds"], count=0)
-                
+        
         self.player = Player(self, (100,50), (8,16))
         
         self.tilemap = Tilemap(self, tile_size=16)
-        print(self.tilemap)
-        
-        self.Display = pg.Surface(DISPLAY)
         self.scroll = [0,0]
+        
         self.animation_sum = 0.0
         
         self.start_time = time.time()
         
-        self.menu_active = False
         
     def update(self):
         self.clock.tick(60)
         self.time = pg.time.get_ticks() * 0.001
-
+ 
         self.delta_time = time.time() - self.start_time
         self.start_time = time.time()
         
         if self.menu_active:
-            self.delta_time *= .1
+            self.menu.run()
+            self.start_time = time.time()
+            self.menu_active = False
         
         if self.sprint:
             self.sprint_time[0] -= self.delta_time
@@ -112,10 +114,13 @@ class App:
         pg.display.flip()
 
     def handle_events(self):
-        
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.is_running = False
+                
+            if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+                self.menu_active = not self.menu_active
+            
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_d or event.key == pg.K_RIGHT:
                     self.movment[2] = True
@@ -132,9 +137,6 @@ class App:
                 if event.key == pg.K_LSHIFT and self.sprint_time[1] <= .001:
                     self.sprint = True
                 
-                if event.key == pg.K_ESCAPE:
-                    self.menu_active = not self.menu_active
-            
             if event.type == pg.KEYUP:
                 if event.key == pg.K_d or event.key == pg.K_RIGHT:
                     self.movment[2] = False
@@ -146,6 +148,7 @@ class App:
                     self.movment[3] = False
                 if event.key == pg.K_LSHIFT:
                     self.sprint = False
+                        
                     
         if self.movment[0]:
             self.player.velocity[0] = -.2
