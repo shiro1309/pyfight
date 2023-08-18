@@ -1,4 +1,3 @@
-import sys
 import time
 
 from scripts.settings import *
@@ -6,6 +5,7 @@ from scripts.entity import *
 from scripts.utils import load_image, load_images, Map_creation, Animation, Paralax
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
+from scripts.menu import *
 
 class App:
     def __init__(self):
@@ -53,12 +53,17 @@ class App:
         
         self.start_time = time.time()
         
+        self.menu_active = False
+        
     def update(self):
         self.clock.tick(60)
         self.time = pg.time.get_ticks() * 0.001
 
         self.delta_time = time.time() - self.start_time
         self.start_time = time.time()
+        
+        if self.menu_active:
+            self.delta_time *= .1
         
         if self.sprint:
             self.sprint_time[0] -= self.delta_time
@@ -109,7 +114,7 @@ class App:
     def handle_events(self):
         
         for event in pg.event.get():
-            if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
+            if event.type == pg.QUIT:
                 self.is_running = False
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_d or event.key == pg.K_RIGHT:
@@ -126,6 +131,9 @@ class App:
                     self.movment[3] = True
                 if event.key == pg.K_LSHIFT and self.sprint_time[1] <= .001:
                     self.sprint = True
+                
+                if event.key == pg.K_ESCAPE:
+                    self.menu_active = not self.menu_active
             
             if event.type == pg.KEYUP:
                 if event.key == pg.K_d or event.key == pg.K_RIGHT:
@@ -142,11 +150,11 @@ class App:
         if self.movment[0]:
             self.player.velocity[0] = -.2
             if self.sprint:
-                self.player.velocity[0] = -.6
+                self.player.velocity[0] = -.4
         if self.movment[2]:
             self.player.velocity[0] = .2
             if self.sprint:
-                self.player.velocity[0] = .6
+                self.player.velocity[0] = .4
        
     def run(self):
         self.is_running = True
