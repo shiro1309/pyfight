@@ -38,9 +38,6 @@ class App:
         self.menu = Menu(self, self.Display)
         self.menu_active = False
         
-        self.map = Map_creation("map/map.png")
-        self.tilemap = self.map.map_extraction()
-        
         self.paralax = Paralax("paralax", 4)
         
         self.clouds = Clouds(self.assets["clouds"], count=0)
@@ -48,6 +45,7 @@ class App:
         self.player = Player(self, (100,50), (8,16))
         
         self.tilemap = Tilemap(self, tile_size=16)
+        self.tilemap.load("map.json")
         self.scroll = [0,0]
         
         self.animation_sum = 0.0
@@ -56,7 +54,7 @@ class App:
         
         
     def update(self):
-        self.clock.tick(60)
+        self.clock.tick()
         self.time = pg.time.get_ticks() * 0.001
  
         self.delta_time = time.time() - self.start_time
@@ -97,7 +95,7 @@ class App:
         self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1])
         self.render_scroll = (int(round(self.scroll[0], 0)), int(round(self.scroll[1], 0)))
         
-        pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
+        pg.display.set_caption(f'{self.clock.get_fps() :.0f} pyfight')
     
     def render(self):
         self.Display.fill((0,0,0))

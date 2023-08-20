@@ -54,13 +54,13 @@ class Editor:
         self.scroll[1] += (self.movment[3] - self.movment[1]) * 2
         
         self.render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
-        self.current_tile_img = self.assets[self.tile_list[self.tile_group]][self.tile_variant]
+        self.current_tile_img = self.assets[self.tile_list[self.tile_group]][self.tile_variant].copy()
         self.current_tile_img.set_alpha(100)
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}  {self.scroll}')
     
     def render(self):
-        self.Display.fill((255, 255, 255))
+        self.Display.fill((0,0,0))
         
         if self.ongrid:
             self.Display.blit(self.current_tile_img, (self.tile_pos[0] * self.tilemap.tile_size - self.scroll[0], self.tile_pos[1] * self.tilemap.tile_size - self.scroll[1]))
@@ -133,6 +133,8 @@ class Editor:
                     self.ongrid = not self.ongrid
                 if event.key == pg.K_o:
                     self.tilemap.save("map.json")
+                if event.key == pg.K_t:
+                    self.tilemap.autotile()
             
             if event.type == pg.MOUSEBUTTONUP:
                 if event.button == 1:
