@@ -60,7 +60,7 @@ class Editor:
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}  {self.scroll}')
     
     def render(self):
-        self.Display.fill((0, 0, 0))
+        self.Display.fill((255, 255, 255))
         
         if self.ongrid:
             self.Display.blit(self.current_tile_img, (self.tile_pos[0] * self.tilemap.tile_size - self.scroll[0], self.tile_pos[1] * self.tilemap.tile_size - self.scroll[1]))
