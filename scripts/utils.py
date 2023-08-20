@@ -85,5 +85,16 @@ class Paralax:
             tiles = math.ceil(DISPLAY[0] / self.bg_width) + 2
             for i in range(tiles):
                 surface.blit(self.images[layer],(round(self.layer_loc[layer][0] + ((i - 1) * self.bg_width) + self.scroll - self.bg_width, 0), 0))
+                
+def death_win():
+    pass
+
+class Text:
+    def __init__(self, text, pos):
+        self.text = text
+        self.text_pos = pos
+    
+    def render(self):
+        pass
         
     
