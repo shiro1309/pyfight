@@ -2,7 +2,7 @@ import time
 
 from scripts.settings import *
 from scripts.entity import *
-from scripts.utils import load_image, load_images, Map_creation, Animation, Paralax
+from scripts.utils import load_image, load_images, Map_creation, Animation, Paralax, Text
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 from scripts.menu import *
@@ -22,6 +22,20 @@ class App:
         self.sprint = False
         self.sprint_check = False
         self.sprint_time = [2, 0]
+        
+        self.colors = {
+            "red": (255,0,0),
+            "green": (0, 255, 0),
+            "blue" : (0, 0, 255)
+        }
+        
+        self.fonts = {
+            "fancy": pg.font.Font("data/assets/fonts/Bitmgothic.ttf", 32),
+            "standard": pg.font.Font("data/assets/fonts/8bitlim.ttf", 32),
+            "simple": pg.font.Font("data/assets/fonts/FFFFORWA.TTF", 32),
+        }
+        
+        self.text = Text("HOW DOES IT WORK?", self.fonts["standard"], (100, 100), self.colors["red"])
         
         self.assets = {
             "player": load_image("entity/player/player_13.png"),
@@ -103,6 +117,10 @@ class App:
         self.paralax.render(self.Display)
         self.clouds.render(self.Display, offset=self.render_scroll)
         self.tilemap.render(self.Display, offset=self.render_scroll)
+        
+        # text
+        self.text.render(self.Display, offset=self.render_scroll)
+        
         self.player.render(self.Display, offset=self.render_scroll)
         
         surf = pg.transform.scale(self.Display, WIN_RES)

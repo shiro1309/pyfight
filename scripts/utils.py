@@ -90,11 +90,18 @@ def death_win():
     pass
 
 class Text:
-    def __init__(self, text, pos):
+    def __init__(self, text, font, pos, color):
         self.text = text
         self.text_pos = pos
+        self.color = color
+        self.font = font
+        
+        self.text_content = self.font.render(text, False, color)
+        self.text_rect = self.text_content.get_rect()
+        self.text_rect.x = pos[0]
+        self.text_rect.y = pos[1]
     
-    def render(self):
-        pass
+    def render(self, surface, offset=(0, 0)):
+        surface.blit(self.text_content, (self.text_rect.x - offset[0], self.text_rect.y - offset[1]))
         
     
