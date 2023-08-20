@@ -10,10 +10,13 @@ class Menu:
         pass
     
     def render(self):
-        pass
+        self.game.render()
     
     def event_handler(self):
         for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
                 
             if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
                 self.running = False

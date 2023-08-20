@@ -1,5 +1,6 @@
 import sys
 import time
+import json
 
 from scripts.settings import *
 from scripts.utils import load_images, Map_creation
@@ -34,6 +35,11 @@ class Editor:
         self.Display = pg.Surface(DISPLAY)
         self.scroll = [0,0]
         self.tilemap = Tilemap(self, tile_size=16)
+        
+        try:
+            self.tilemap.load("map.json")
+        except FileNotFoundError:
+            pass
         
         self.start_time = time.time()
         self.clicking = False
