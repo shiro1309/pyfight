@@ -1,4 +1,5 @@
 import time
+import random
 
 from scripts.settings import *
 from scripts.entity import *
@@ -6,6 +7,7 @@ from scripts.utils import load_image, load_images, Map_creation, Animation, Para
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 from scripts.menu import *
+from scripts.rain import raindrop
 
 class App:
     def __init__(self):
@@ -53,8 +55,7 @@ class App:
         self.menu_active = False
         
         self.paralax = Paralax("paralax", 4)
-        
-        self.clouds = Clouds(self.assets["clouds"], count=0)
+        #self.clouds = Clouds(self.assets["clouds"], count=0)
         
         self.player = Player(self, (100,50), (8,16))
         
@@ -65,6 +66,11 @@ class App:
         self.animation_sum = 0.0
         
         self.start_time = time.time()
+        
+        self.raindrops = []
+        self.rain_sum = 0.0
+        
+        print(self.tilemap.extract([("grass", 2)], keep=True))
         
         
     def update(self):
@@ -103,11 +109,16 @@ class App:
         
         self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
         self.paralax.update(self.movment[0] - self.movment[2], self.delta_time)
-        self.clouds.update(self.delta_time)
+        #self.clouds.update(self.delta_time)
         
         self.scroll[0] += (self.player.rect().centerx - self.Display.get_width() / 2 - self.scroll[0])
         self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1])
         self.render_scroll = (int(round(self.scroll[0], 0)), int(round(self.scroll[1], 0)))
+        self.rain_sum += self.delta_time
+        if self.rain_sum >= 1/120:
+            self.rain_sum = 0
+            self.raindrops.append(raindrop(random.randint(25,35), offset=self.render_scroll))
+        
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f} pyfight')
     
@@ -115,16 +126,20 @@ class App:
         self.Display.fill((0,0,0))
         
         self.paralax.render(self.Display)
-        self.clouds.render(self.Display, offset=self.render_scroll)
+        #self.clouds.render(self.Display, offset=self.render_scroll)
         self.tilemap.render(self.Display, offset=self.render_scroll)
-        
+        for rain in self.raindrops:
+            kill = rain.update(self.delta_time, offset=self.render_scroll)
+            rain.render(self.Display, offset=self.render_scroll)
+            if kill:
+                self.raindrops.remove(rain)
+            
         # text
-        self.text.render(self.Display, offset=self.render_scroll)
+        #self.text.render(self.Display, offset=self.render_scroll)
         
         self.player.render(self.Display, offset=self.render_scroll)
         
         surf = pg.transform.scale(self.Display, WIN_RES)
-        #self.screen.blit(surf, (0,0))
         self.screen.blit(pg.transform.flip(surf, False, False), (0,0))
         
         pg.display.flip()

@@ -66,7 +66,6 @@ class Paralax:
         self.scroll = 0
         for i in range(layers):
             self.layer_loc.append([0,0])
-        print(self.layer_loc)
         
         
     def update(self, direction, delta):
