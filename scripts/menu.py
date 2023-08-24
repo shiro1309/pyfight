@@ -4,7 +4,6 @@ class Menu:
     def __init__(self, game, surface):
         self.game = game
         self.surface = surface
-        self.menu_active = True
         
     def update(self):
         pass
@@ -23,8 +22,7 @@ class Menu:
 
     def run(self):
         self.running = True
-        if self.menu_active:
-            while self.running:
-                self.event_handler()
-                self.update()
-                self.render()
+        while self.running:
+            self.event_handler()
+            self.update()
+            self.render()

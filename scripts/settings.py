@@ -7,3 +7,4 @@ import time
 
 WIN_RES = (640*2, 480*2)
 DISPLAY = [320, 240]
+RENDER_SCALE = 4.0

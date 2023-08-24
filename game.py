@@ -3,7 +3,7 @@ import random
 
 from scripts.settings import *
 from scripts.entity import *
-from scripts.utils import load_image, load_images, Map_creation, Animation, Paralax, Text
+from scripts.utils import load_image, load_images, Map_creation, Animation, Paralax, Text, TextButton
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 from scripts.menu import *
@@ -32,12 +32,12 @@ class App:
         }
         
         self.fonts = {
-            "fancy": pg.font.Font("data/assets/fonts/Bitmgothic.ttf", 32),
-            "standard": pg.font.Font("data/assets/fonts/8bitlim.ttf", 32),
-            "simple": pg.font.Font("data/assets/fonts/FFFFORWA.TTF", 32),
+            "fancy": pg.font.SysFont("data/assets/fonts/Bitmgothic.ttf", 32),
+            "standard": pg.font.SysFont("data/assets/fonts/8bitlim.ttf", 32),
+            "simple": pg.font.SysFont("data/assets/fonts/FFFFORWA.TTF", 32),
         }
         
-        self.text = Text("HOW DOES IT WORK?", self.fonts["standard"], (100, 100), self.colors["red"])
+        self.text = Text("HOW DOES IT WORK?", self.fonts["standard"], self.colors["red"], 100, 100)
         
         self.assets = {
             "player": load_image("entity/player/player_13.png"),
@@ -69,8 +69,7 @@ class App:
         
         self.raindrops = []
         self.rain_sum = 0.0
-        
-        print(self.tilemap.extract([("grass", 2)], keep=True))
+        self.test12 = TextButton(100, 100, self.text)
         
         
     def update(self):
@@ -80,10 +79,20 @@ class App:
         self.delta_time = time.time() - self.start_time
         self.start_time = time.time()
         
+        if self.movment[0]:
+            self.player.velocity[0] = -.2
+            if self.sprint:
+                self.player.velocity[0] = -.4
+        if self.movment[2]:
+            self.player.velocity[0] = .2
+            if self.sprint:
+                self.player.velocity[0] = .4
+        
         if self.menu_active:
             self.menu.run()
             self.start_time = time.time()
             self.menu_active = False
+            self.movment = [False, False, False, False]
         
         if self.sprint:
             self.sprint_time[0] -= self.delta_time
@@ -114,11 +123,13 @@ class App:
         self.scroll[0] += (self.player.rect().centerx - self.Display.get_width() / 2 - self.scroll[0])
         self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1])
         self.render_scroll = (int(round(self.scroll[0], 0)), int(round(self.scroll[1], 0)))
-        self.rain_sum += self.delta_time
-        if self.rain_sum >= 1/120:
-            self.rain_sum = 0
-            self.raindrops.append(raindrop(random.randint(25,35), offset=self.render_scroll))
         
+        #self.rain_sum += self.delta_time
+        #if self.rain_sum >= 1/120:
+        #    self.rain_sum = 0
+        #    self.raindrops.append(raindrop(random.randint(25,35), offset=self.render_scroll))
+        
+        self.test12.update((self.mouse_x, self.mouse_y))
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f} pyfight')
     
@@ -128,14 +139,15 @@ class App:
         self.paralax.render(self.Display)
         #self.clouds.render(self.Display, offset=self.render_scroll)
         self.tilemap.render(self.Display, offset=self.render_scroll)
-        for rain in self.raindrops:
-            kill = rain.update(self.delta_time, offset=self.render_scroll)
-            rain.render(self.Display, offset=self.render_scroll)
-            if kill:
-                self.raindrops.remove(rain)
+        
+        #for rain in self.raindrops:
+        #    kill = rain.update(self.delta_time, offset=self.render_scroll)
+        #    rain.render(self.Display, offset=self.render_scroll)
+        #    if kill:
+        #        self.raindrops.remove(rain)
             
         # text
-        #self.text.render(self.Display, offset=self.render_scroll)
+        self.test12.render(self.Display, offset=self.render_scroll)
         
         self.player.render(self.Display, offset=self.render_scroll)
         
@@ -180,15 +192,9 @@ class App:
                 if event.key == pg.K_LSHIFT:
                     self.sprint = False
                         
-                    
-        if self.movment[0]:
-            self.player.velocity[0] = -.2
-            if self.sprint:
-                self.player.velocity[0] = -.4
-        if self.movment[2]:
-            self.player.velocity[0] = .2
-            if self.sprint:
-                self.player.velocity[0] = .4
+        self.mouse_x, self.mouse_y = pg.mouse.get_pos()
+        self.mouse_x //= RENDER_SCALE
+        self.mouse_y //= RENDER_SCALE
        
     def run(self):
         self.is_running = True

@@ -89,18 +89,51 @@ def death_win():
     pass
 
 class Text:
-    def __init__(self, text, font, pos, color):
-        self.text = text
-        self.text_pos = pos
-        self.color = color
-        self.font = font
-        
-        self.text_content = self.font.render(text, False, color)
-        self.text_rect = self.text_content.get_rect()
-        self.text_rect.x = pos[0]
-        self.text_rect.y = pos[1]
+    def __init__(self, text, font, color, x, y):
+        self.x = x
+        self.y = y
+        self.text_content = font.render(text, False, color)
     
     def render(self, surface, offset=(0, 0)):
-        surface.blit(self.text_content, (self.text_rect.x - offset[0], self.text_rect.y - offset[1]))
+        surface.blit(self.text_content, (self.x - offset[0], self.y - offset[1]))
         
+class TextButton:
+    def __init__(self, x, y, text,):
+        self.text = text
+        self.rect = self.text.text_content.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.clicked = False
+        print(self.rect.x, self.rect.y, self.rect.width, self.rect.height)
     
+    def update(self, mouse_pos):
+        if self.rect.collidepoint(mouse_pos):
+            if pg.mouse.get_pressed()[0] and self.clicked == False:
+                self.clicked = True
+        
+        if pg.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+    def render(self, surface, offset=(0,0)):
+        pg.draw.rect(surface, (100,100,100), (self.rect.x - offset[0], self.rect.y - offset[1], self.rect.width, self.rect.height))
+        surface.blit(self.text.text_content, (self.rect.x - offset[0], self.rect.y - offset[1]))
+        
+class ImageButton:
+    def __init__(self, x, y, image):
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.clicked = False
+    
+    def update(self, mouse_pos):
+        if self.rect.collidepoint(mouse_pos):
+            if pg.mouse.get_pressed()[0] and self.clicked == False:
+                self.clicked = True
+                print("helle")
+        
+        if pg.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+    def render(self, surface, offset=(0,0)):
+        pg.draw.rect(surface, (100,100,100), (self.rect.x - offset[0], self.rect.y - offset[1], self.rect.width, self.rect.height))
+        surface.blit(self.image, (self.rect.x - offset[0], self.rect.y - offset[1]))
