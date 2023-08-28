@@ -32,12 +32,12 @@ class App:
         }
         
         self.fonts = {
-            "fancy": pg.font.SysFont("data/assets/fonts/Bitmgothic.ttf", 32),
-            "standard": pg.font.SysFont("data/assets/fonts/8bitlim.ttf", 32),
-            "simple": pg.font.SysFont("data/assets/fonts/FFFFORWA.TTF", 32),
+            "fancy": pg.font.Font("data/assets/fonts/Bitmgothic.ttf", 32),
+            "standard": pg.font.Font("data/assets/fonts/8bitlim.ttf", 32),
+            "simple": pg.font.Font("data/assets/fonts/FFFFORWA.TTF", 32),
         }
         
-        self.text = Text("HOW DOES IT WORK?", self.fonts["standard"], self.colors["red"], 100, 100)
+        self.text = Text("how does it work?", self.fonts["standard"], self.colors["red"], 100, 100)
         
         self.assets = {
             "player": load_image("entity/player/player_13.png"),
@@ -79,14 +79,14 @@ class App:
         self.delta_time = time.time() - self.start_time
         self.start_time = time.time()
         
-        if self.movment[0]:
-            self.player.velocity[0] = -.2
-            if self.sprint:
-                self.player.velocity[0] = -.4
-        if self.movment[2]:
-            self.player.velocity[0] = .2
-            if self.sprint:
-                self.player.velocity[0] = .4
+        #if self.movment[0]:
+        #    self.player.velocity[0] = -.2
+        #    if self.sprint:
+        #        self.player.velocity[0] = -.4
+        #if self.movment[2]:
+        #    self.player.velocity[0] = .2
+        #    if self.sprint:
+        #        self.player.velocity[0] = .4
         
         if self.menu_active:
             self.menu.run()
@@ -94,8 +94,10 @@ class App:
             self.menu_active = False
             self.movment = [False, False, False, False]
         
+
         if self.sprint:
             self.sprint_time[0] -= self.delta_time
+
         if self.sprint_time[0] <= 0:
             self.sprint_time[0] = 0
             self.sprint = False
@@ -105,9 +107,11 @@ class App:
             self.sprint_time[1] -= self.delta_time
             if self.sprint_time[1] <= 0:
                 self.sprint_time[0] = 0
+        
         if self.sprint == False and self.sprint_time[1] <= 0.001:
             self.sprint_time[0] = 2
             self.sprint_time[1] = 0
+        
         
         if self.player.velocity[0] > 0:
             self.player.velocity[0] = max(0, self.player.velocity[0] - 0.5 * self.delta_time)
@@ -129,7 +133,7 @@ class App:
         #    self.rain_sum = 0
         #    self.raindrops.append(raindrop(random.randint(25,35), offset=self.render_scroll))
         
-        self.test12.update((self.mouse_x, self.mouse_y))
+        #self.test12.update((self.mouse_x, self.mouse_y))
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f} pyfight')
     
@@ -145,9 +149,9 @@ class App:
         #    rain.render(self.Display, offset=self.render_scroll)
         #    if kill:
         #        self.raindrops.remove(rain)
-            
+        
         # text
-        self.test12.render(self.Display, offset=self.render_scroll)
+        #self.test12.render(self.Display, offset=self.render_scroll)
         
         self.player.render(self.Display, offset=self.render_scroll)
         
