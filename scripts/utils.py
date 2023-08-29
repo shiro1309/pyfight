@@ -15,6 +15,21 @@ def load_images(path):
     
     return images
 
+def ratio_surf(screen, Display, ratio):
+    screen_value = screen.get_size()
+    screen_ratio = screen_value[0] / screen_value[1]
+    window_ratio = (screen_ratio-ratio)
+
+    if window_ratio > 0:
+        win_val = screen_value[1] * ratio
+        surf = pg.transform.scale(Display, (win_val, screen_value[1]))
+    elif window_ratio < 0:
+        win_val = screen_value[0] / ratio
+        surf = pg.transform.scale(Display, (screen_value[0], win_val))
+    else:
+        surf = pg.transform.scale(Display, (screen_value[0], screen_value[1]))
+    screen.blit(pg.transform.flip(surf, False, False), (screen_value[0]//2-surf.get_width()//2,screen_value[1]//2-surf.get_height()//2))
+
 class Map_creation:
     def __init__(self, image_path):
         self.image = Image.open("data/" + image_path)
@@ -73,8 +88,8 @@ class Paralax:
     def update(self, direction, delta):
         speed = .2
         for i , layer_pos in enumerate(self.layer_loc):
-            layer_pos[0] += speed * delta * direction
-            self.scroll[i] += direction * speed
+            #layer_pos[0] += speed * delta * direction
+            self.scroll[i] += direction * speed * delta * 40
             speed += .2
             if abs(self.scroll[i]) >= self.bg_width:
                 self.scroll[i] = 0
@@ -128,7 +143,6 @@ class ImageButton:
         if self.rect.collidepoint(mouse_pos):
             if pg.mouse.get_pressed()[0] and self.clicked == False:
                 self.clicked = True
-                print("helle")
         
         if pg.mouse.get_pressed()[0] == 0:
             self.clicked = False

@@ -3,7 +3,7 @@ import random
 
 from scripts.settings import *
 from scripts.entity import *
-from scripts.utils import load_image, load_images, Map_creation, Animation, Paralax, Text, TextButton
+from scripts.utils import load_image, load_images, ratio_surf, Animation, Paralax, Text, TextButton
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 from scripts.menu import *
@@ -13,8 +13,9 @@ class App:
     def __init__(self):
         pg.init()
         
-        self.screen = pg.display.set_mode(WIN_RES, pg.DOUBLEBUF)
+        self.screen = pg.display.set_mode(WIN_RES, pg.DOUBLEBUF | pg.RESIZABLE)
         self.Display = pg.Surface(DISPLAY)
+        self.ratio = self.Display.get_width() / self.Display.get_height()
         
         self.movment = [False, False, False, False]
         
@@ -55,7 +56,6 @@ class App:
         self.menu_active = False
         
         self.paralax = Paralax("paralax", 4)
-        #self.clouds = Clouds(self.assets["clouds"], count=0)
         
         self.player = Player(self, (100,50), (8,16))
         
@@ -79,17 +79,8 @@ class App:
         self.delta_time = time.time() - self.start_time
         self.start_time = time.time()
         
-        #if self.movment[0]:
-        #    self.player.velocity[0] = -.2
-        #    if self.sprint:
-        #        self.player.velocity[0] = -.4
-        #if self.movment[2]:
-        #    self.player.velocity[0] = .2
-        #    if self.sprint:
-        #        self.player.velocity[0] = .4
-        
         if self.menu_active:
-            self.menu.run()
+            self.menu.run(self.Display)
             self.start_time = time.time()
             self.menu_active = False
             self.movment = [False, False, False, False]
@@ -122,41 +113,37 @@ class App:
         
         self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
         self.paralax.update(self.movment[0] - self.movment[2], self.delta_time)
-        #self.clouds.update(self.delta_time)
         
         self.scroll[0] += (self.player.rect().centerx - self.Display.get_width() / 2 - self.scroll[0])
         self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1])
         self.render_scroll = (int(round(self.scroll[0], 0)), int(round(self.scroll[1], 0)))
         
-        #self.rain_sum += self.delta_time
-        #if self.rain_sum >= 1/120:
-        #    self.rain_sum = 0
-        #    self.raindrops.append(raindrop(random.randint(25,35), offset=self.render_scroll))
-        
-        #self.test12.update((self.mouse_x, self.mouse_y))
-        
         pg.display.set_caption(f'{self.clock.get_fps() :.0f} pyfight')
     
     def render(self):
         self.Display.fill((0,0,0))
+        self.screen.fill((103, 49, 71))
         
         self.paralax.render(self.Display)
-        #self.clouds.render(self.Display, offset=self.render_scroll)
         self.tilemap.render(self.Display, offset=self.render_scroll)
-        
-        #for rain in self.raindrops:
-        #    kill = rain.update(self.delta_time, offset=self.render_scroll)
-        #    rain.render(self.Display, offset=self.render_scroll)
-        #    if kill:
-        #        self.raindrops.remove(rain)
-        
-        # text
-        #self.test12.render(self.Display, offset=self.render_scroll)
         
         self.player.render(self.Display, offset=self.render_scroll)
         
-        surf = pg.transform.scale(self.Display, WIN_RES)
-        self.screen.blit(pg.transform.flip(surf, False, False), (0,0))
+        ratio_surf(self.screen, self.Display, self.ratio)
+
+        #screen_value = self.screen.get_size()
+        #screen_ratio = screen_value[0] / screen_value[1]
+        #window_ratio = (screen_ratio-self.ratio)
+    #
+        #if window_ratio > 0:
+        #    win_val = screen_value[1] * self.ratio
+        #    surf = pg.transform.scale(self.Display, (win_val, screen_value[1]))
+        #elif window_ratio < 0:
+        #    win_val = screen_value[0] / self.ratio
+        #    surf = pg.transform.scale(self.Display, (screen_value[0], win_val))
+        #else:
+        #    surf = pg.transform.scale(self.Display, (screen_value[0], screen_value[1]))
+        #self.screen.blit(pg.transform.flip(surf, False, False), (screen_value[0]//2-surf.get_width()//2,screen_value[1]//2-surf.get_height()//2))
         
         pg.display.flip()
 
@@ -207,8 +194,6 @@ class App:
             self.handle_events()
             self.update()
             self.render()
-        pg.quit()
-        sys.exit()
                 
 if __name__ == '__main__':
     app = App()
