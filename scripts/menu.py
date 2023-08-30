@@ -1,4 +1,5 @@
 from scripts.settings import *
+from scripts.utils import ratio_surf
 import time
 
 class Menu:
@@ -6,6 +7,7 @@ class Menu:
         self.game = game
         self.surface = surface
         self.menu_surface = pg.Surface(DISPLAY)
+        self.option_surface = pg.Surface((100, DISPLAY[1]))
         self.clock = pg.time.Clock()
         
     def update(self):
@@ -15,17 +17,16 @@ class Menu:
 
         self.delta_time = time.time() - self.start_time
         self.start_time = time.time()
-        
-        self.menu_surface.set_alpha(100)
+        self.option_surface.fill((255,255,255))
+        self.option_surface.set_alpha(100)
         pg.display.set_caption(f'{1/self.delta_time :.0f} pyfight')
     
     def render(self):
-        pg.draw.rect(self.menu_surface, (255,255,255), (0, 0, 100, DISPLAY[1]))
 
-        surf = pg.transform.scale(self.game_surface, WIN_RES)
-        self.game.screen.blit(pg.transform.flip(surf, False, False), (0,0))
-        surf = pg.transform.scale(self.menu_surface, WIN_RES)
-        self.game.screen.blit(pg.transform.flip(surf, False, False), (0,0))
+        self.menu_surface.blit(self.game_surface, (0,0))
+        self.menu_surface.blit(self.option_surface, (0,0))
+        
+        ratio_surf(self.game.screen, self.menu_surface)
         pg.display.update()
     
     def event_handler(self):

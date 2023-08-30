@@ -15,7 +15,8 @@ def load_images(path):
     
     return images
 
-def ratio_surf(screen, Display, ratio):
+def ratio_surf(screen, Display):
+    ratio = DISPLAY[0] / DISPLAY[1]
     screen_value = screen.get_size()
     screen_ratio = screen_value[0] / screen_value[1]
     window_ratio = (screen_ratio-ratio)
@@ -28,7 +29,7 @@ def ratio_surf(screen, Display, ratio):
         surf = pg.transform.scale(Display, (screen_value[0], win_val))
     else:
         surf = pg.transform.scale(Display, (screen_value[0], screen_value[1]))
-    screen.blit(pg.transform.flip(surf, False, False), (screen_value[0]//2-surf.get_width()//2,screen_value[1]//2-surf.get_height()//2))
+    screen.blit(surf, (screen_value[0]//2-surf.get_width()//2,screen_value[1]//2-surf.get_height()//2))
 
 class Map_creation:
     def __init__(self, image_path):

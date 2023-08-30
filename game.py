@@ -9,13 +9,11 @@ from scripts.clouds import Clouds
 from scripts.menu import *
 from scripts.rain import raindrop
 
-class App:
-    def __init__(self):
-        pg.init()
+class Game:
+    def __init__(self, game):
+        self.game = game
         
-        self.screen = pg.display.set_mode(WIN_RES, pg.DOUBLEBUF | pg.RESIZABLE)
         self.Display = pg.Surface(DISPLAY)
-        self.ratio = self.Display.get_width() / self.Display.get_height()
         
         self.movment = [False, False, False, False]
         
@@ -52,7 +50,7 @@ class App:
             "player/jump" : Animation(load_images("entity/player/jump")),
         }
         
-        self.menu = Menu(self, self.Display)
+        self.menu = Menu(self.game, self.Display)
         self.menu_active = False
         
         self.paralax = Paralax("paralax", 4)
@@ -66,10 +64,6 @@ class App:
         self.animation_sum = 0.0
         
         self.start_time = time.time()
-        
-        self.raindrops = []
-        self.rain_sum = 0.0
-        self.test12 = TextButton(100, 100, self.text)
         
         
     def update(self):
@@ -122,21 +116,22 @@ class App:
     
     def render(self):
         self.Display.fill((0,0,0))
-        self.screen.fill((103, 49, 71))
+        self.game.screen.fill((103, 49, 71))
         
         self.paralax.render(self.Display)
         self.tilemap.render(self.Display, offset=self.render_scroll)
         
         self.player.render(self.Display, offset=self.render_scroll)
         
-        ratio_surf(self.screen, self.Display, self.ratio)
+        ratio_surf(self.game.screen, self.Display)
         
         pg.display.flip()
 
     def handle_events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                self.is_running = False
+                pg.quit()
+                sys.exit()
                 
             if event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
                 self.menu_active = not self.menu_active
@@ -181,6 +176,6 @@ class App:
             self.update()
             self.render()
                 
-if __name__ == '__main__':
-    app = App()
-    app.run()
+#if __name__ == '__main__':
+#    app = App()
+#    app.run()
