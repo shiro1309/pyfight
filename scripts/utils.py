@@ -87,8 +87,7 @@ class Paralax:
         
     def update(self, direction, delta):
         speed = .2
-        for i , layer_pos in enumerate(self.layer_loc):
-            #layer_pos[0] += speed * delta * direction
+        for i in range(len(self.layer_loc)):
             self.scroll[i] += direction * speed * delta * 40
             speed += .2
             if abs(self.scroll[i]) >= self.bg_width:
@@ -113,16 +112,18 @@ class Text:
         surface.blit(self.text_content, (self.x - offset[0], self.y - offset[1]))
         
 class TextButton:
-    def __init__(self, x, y, text,):
+    def __init__(self, x, y, text, function):
         self.text = text
         self.rect = self.text.text_content.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.clicked = False
+        self.func = function
     
     def update(self, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
             if pg.mouse.get_pressed()[0] and self.clicked == False:
+                self.func()
                 self.clicked = True
         
         if pg.mouse.get_pressed()[0] == 0:
@@ -133,15 +134,17 @@ class TextButton:
         surface.blit(self.text.text_content, (self.rect.x - offset[0], self.rect.y - offset[1]))
         
 class ImageButton:
-    def __init__(self, x, y, image):
+    def __init__(self, x, y, image, function):
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
         self.clicked = False
+        self.func = function
     
     def update(self, mouse_pos):
         if self.rect.collidepoint(mouse_pos):
             if pg.mouse.get_pressed()[0] and self.clicked == False:
+                self.func()
                 self.clicked = True
         
         if pg.mouse.get_pressed()[0] == 0:

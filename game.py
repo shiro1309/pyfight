@@ -130,20 +130,6 @@ class App:
         self.player.render(self.Display, offset=self.render_scroll)
         
         ratio_surf(self.screen, self.Display, self.ratio)
-
-        #screen_value = self.screen.get_size()
-        #screen_ratio = screen_value[0] / screen_value[1]
-        #window_ratio = (screen_ratio-self.ratio)
-    #
-        #if window_ratio > 0:
-        #    win_val = screen_value[1] * self.ratio
-        #    surf = pg.transform.scale(self.Display, (win_val, screen_value[1]))
-        #elif window_ratio < 0:
-        #    win_val = screen_value[0] / self.ratio
-        #    surf = pg.transform.scale(self.Display, (screen_value[0], win_val))
-        #else:
-        #    surf = pg.transform.scale(self.Display, (screen_value[0], screen_value[1]))
-        #self.screen.blit(pg.transform.flip(surf, False, False), (screen_value[0]//2-surf.get_width()//2,screen_value[1]//2-surf.get_height()//2))
         
         pg.display.flip()
 
