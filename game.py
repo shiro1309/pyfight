@@ -8,6 +8,7 @@ from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 from scripts.menu import *
 from scripts.rain import Raindrops
+from scripts.particle import Particle
 
 class Game:
     def __init__(self, game):
@@ -49,6 +50,7 @@ class Game:
             "player/death" : Animation(load_images("entity/player/death"), image_dur=12),
             "player/jump" : Animation(load_images("entity/player/jump")),
             "player/wall_slide" : Animation(load_images("entity/player/jump")),
+            "particle/particle": Animation(load_images("particle/particle"), image_dur=4, loop=False),
         }
         
         self.menu = Menu(self.game, self.Display)
@@ -56,6 +58,7 @@ class Game:
         
         self.paralax = Paralax("paralax", 4)
         self.raindrops = Raindrops(self)
+        self.particles = []
         
         self.player = Player(self, (100,50), (8,16))
         
@@ -108,24 +111,30 @@ class Game:
             self.player.velocity[0] = 0
         
         self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0), self.delta_time, self.sprint)
-        self.paralax.update(self.movment[0] - self.movment[2], self.delta_time)
+        #self.paralax.update(self.movment[0] - self.movment[2], self.delta_time)
         
         self.scroll[0] += (self.player.rect().centerx - self.Display.get_width() / 2 - self.scroll[0])
         self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1])
         self.render_scroll = (int(round(self.scroll[0], 0)), int(round(self.scroll[1], 0)))
-        #self.raindrops.update()
+        
+        #print(self.player.pos)
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f} pyfight')
     
     def render(self):
-        self.Display.fill((0,0,0))
+        self.Display.fill((255,255,255))
         self.game.screen.fill((103, 49, 71))
         
-        self.paralax.render(self.Display)
+        #self.paralax.render(self.Display)
         self.tilemap.render(self.Display, offset=self.render_scroll)
         
         self.player.render(self.Display, offset=self.render_scroll)
         self.raindrops.draw(self.Display, offset=self.render_scroll)
+        for particle in self.particles.copy():
+            kill = particle.update()
+            particle.render(self.Display, offset=self.render_scroll)
+            if kill:
+                self.particles.remove(particle)
         
         ratio_surf(self.game.screen, self.Display)
         
@@ -152,6 +161,10 @@ class Game:
                     self.player.velocity[0] = -.2
                 if event.key == pg.K_s or event.key == pg.K_DOWN:
                     self.movment[3] = True
+
+                if event.key == pg.K_x:
+                    self.player.dash()
+
                 if event.key == pg.K_LSHIFT and self.sprint_time[1] <= .001:
                     self.sprint = True
                 

@@ -34,7 +34,7 @@ class App:
                     self.movment[2] = True
                     self.player.velocity[0] = .2
                 if event.key == pg.K_w or event.key == pg.K_UP:
-                    self.movment[1] = True
+                        self.movment[1] = True
                 if event.key == pg.K_a or event.key == pg.K_LEFT:
                     self.movment[0] = True
                     self.player.velocity[0] = -.2
