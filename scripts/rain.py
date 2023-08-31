@@ -5,7 +5,7 @@ import random
 class raindrop:
     def __init__(self, length, offset=(0,0)):
         self.length = length
-        self.angle = ((random.random() - .5) * 25 ) * (math.pi / 180)
+        self.angle = (random.random() * 10 ) * (math.pi / 180)
         #self.color = (54, 106, 145, 0)
         self.color = (17, 18, 18)
         self.start_pos = (random.randint(-50 + offset[0], DISPLAY[0] + offset[0] + 50), -30 + offset[1])
@@ -30,10 +30,18 @@ class raindrop:
         
 class Raindrops:
     def __init__(self, game):
-        pass
-
-    def update(self):
-        pass
+        self.game = game
+        self.raindrops = []
+        self.rain_sum = 0.0
     
-    def render(self, surface, offset=(0,0)):
-        pass
+    def draw(self, surface, offset=(0,0)):
+        self.rain_sum += self.game.delta_time
+        if self.rain_sum >= 1/120:
+            self.rain_sum = 0
+            self.raindrops.append(raindrop(random.randint(25,35), offset=offset))
+
+        for rain in self.raindrops:
+            kill = rain.update(self.game.delta_time, offset=offset)
+            rain.render(surface, offset=offset)
+            if kill:
+                self.raindrops.remove(rain)

@@ -64,7 +64,7 @@ class PhysicsEntity:
         if self.collisions["down"] or self.collisions["up"]:
             self.velocity[1] = 0
         
-        self.velocity[1] = min(6, self.velocity[1] + 0.1*delta*100)
+        self.velocity[1] = min(5, self.velocity[1] + 0.1*delta*100)
         
         self.game.animation_sum += self.game.delta_time
         if self.game.animation_sum >= self.frame_rate:
@@ -79,19 +79,62 @@ class Player(PhysicsEntity):
     def __init__(self, game, pos, size):
         super().__init__(game, "player", pos, size)
         self.air_time = 0
+        self.jumps = 1
+        self.wall_slide = False
+        self.last_movment = [0, 0]
         
     def update(self, tilemap, movment=(0, 0), delta=0, sprint=False):
         super().update(tilemap, movment=movment, delta=delta, sprint=sprint)
         self.movment = movment
         
         self.air_time += 1 * delta / 0.0167
-        
         if self.collisions["down"]:
             self.air_time = 0
-    
-        if self.air_time > 4:
-            self.set_action("jump")
-        elif self.movment[0] != 0:
-            self.set_action("run")
+            self.jumps = 1
+
+        self.wall_slide = False
+        if self.collisions["left"] or self.collisions["right"] and self.air_time > 4:
+            self.wall_slide = True
+            self.velocity[1] = min(self.velocity[1], .5)
+            if self.collisions["right"]:
+                self.flip = False
+            else:
+                self.flip = True
+            self.set_action("wall_slide")
+
+        if not self.wall_slide:
+            if self.air_time > 4:
+                self.set_action("jump")
+            elif self.movment[0] != 0:
+                self.set_action("run")
+            else:
+                self.set_action("idle")
+        
+        if self.velocity[0] > 0:
+            self.velocity[0] = max(self.velocity[0] - 0.1, 0)
         else:
-            self.set_action("idle")
+            self.velocity[0] = min(self.velocity[0] + 0.1, 0)
+
+        self.last_movment = movment
+    
+    def jump(self):
+        if self.wall_slide:
+            if self.flip and self.last_movment[0] < 0:
+                self.velocity[0] = 5.5
+                self.velocity[1] = -3.5
+                self.air_time = 5
+                self.jumps = max(0, self.jumps - 1)
+                return True
+            
+            elif not self.flip and self.last_movment[0] > 0:
+                self.velocity[0] = -5.5
+                self.velocity[1] = -3.5
+                self.air_time = 5
+                self.jumps = max(0, self.jumps - 1)
+                return True
+
+        elif self.jumps:
+            self.velocity[1] = -4
+            self.jumps -= 1
+            self.air_time = 6
+            return True

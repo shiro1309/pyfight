@@ -15,6 +15,7 @@ class App:
         pass
 
     def render(self):
+        self.screen.fill((103, 49, 71))
         self.Display.fill((255,255,255))
         ratio_surf(self.screen, self.Display)
         pg.display.update()
@@ -33,9 +34,7 @@ class App:
                     self.movment[2] = True
                     self.player.velocity[0] = .2
                 if event.key == pg.K_w or event.key == pg.K_UP:
-                    if self.player.air_time <= 6:
-                        self.movment[1] = True
-                        self.player.velocity[1] = -5
+                    self.movment[1] = True
                 if event.key == pg.K_a or event.key == pg.K_LEFT:
                     self.movment[0] = True
                     self.player.velocity[0] = -.2

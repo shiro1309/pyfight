@@ -7,7 +7,7 @@ from scripts.utils import load_image, load_images, ratio_surf, Animation, Parala
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 from scripts.menu import *
-from scripts.rain import raindrop
+from scripts.rain import Raindrops
 
 class Game:
     def __init__(self, game):
@@ -48,12 +48,14 @@ class Game:
             "player/run" : Animation(load_images("entity/player/run"), image_dur= 2),
             "player/death" : Animation(load_images("entity/player/death"), image_dur=12),
             "player/jump" : Animation(load_images("entity/player/jump")),
+            "player/wall_slide" : Animation(load_images("entity/player/jump")),
         }
         
         self.menu = Menu(self.game, self.Display)
         self.menu_active = False
         
         self.paralax = Paralax("paralax", 4)
+        self.raindrops = Raindrops(self)
         
         self.player = Player(self, (100,50), (8,16))
         
@@ -111,6 +113,7 @@ class Game:
         self.scroll[0] += (self.player.rect().centerx - self.Display.get_width() / 2 - self.scroll[0])
         self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1])
         self.render_scroll = (int(round(self.scroll[0], 0)), int(round(self.scroll[1], 0)))
+        #self.raindrops.update()
         
         pg.display.set_caption(f'{self.clock.get_fps() :.0f} pyfight')
     
@@ -122,10 +125,11 @@ class Game:
         self.tilemap.render(self.Display, offset=self.render_scroll)
         
         self.player.render(self.Display, offset=self.render_scroll)
+        self.raindrops.draw(self.Display, offset=self.render_scroll)
         
         ratio_surf(self.game.screen, self.Display)
         
-        pg.display.flip()
+        pg.display.update()
 
     def handle_events(self):
         for event in pg.event.get():
@@ -141,9 +145,8 @@ class Game:
                     self.movment[2] = True
                     self.player.velocity[0] = .2
                 if event.key == pg.K_w or event.key == pg.K_UP:
-                    if self.player.air_time <= 6:
-                        self.movment[1] = True
-                        self.player.velocity[1] = -5
+                    self.player.jump()
+                    self.movment[1] = True
                 if event.key == pg.K_a or event.key == pg.K_LEFT:
                     self.movment[0] = True
                     self.player.velocity[0] = -.2
