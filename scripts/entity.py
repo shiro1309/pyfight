@@ -161,7 +161,7 @@ class Player(PhysicsEntity):
             elif self.movment[0] != 0:
                 self.set_action("run")
             else:
-                self.set_action("idle")
+                self.set_action("idle") 
                 
         if int(abs(self.dashing)) in {60,50}:
             for i in range(20):

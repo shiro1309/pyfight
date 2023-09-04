@@ -71,7 +71,7 @@ class App:
             enemy.update(self.tilemap, (0,0))
 
         self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0))
-        #self.paralax.update(self.movment[0] - self.movment[2], self.delta_time, self.player)
+        self.paralax.update(self.movment[0] - self.movment[2], self.delta_time, self.player)
         
         self.scroll[0] += (self.player.rect().centerx - self.Display.get_width() / 2 - self.scroll[0]) 
         self.scroll[1] += (self.player.rect().centery - self.Display.get_height() / 2 - self.scroll[1])
@@ -81,9 +81,9 @@ class App:
     
     def render(self):
         self.screen.fill((103, 49, 71))
-        self.Display.fill((255,255,255))
+        self.Display.fill((0,0,0))
 
-        #self.paralax.render(self.Display)
+        self.paralax.render(self.Display)
         self.tilemap.render(self.Display, offset=self.render_scroll)
 
         for enemy in self.enemies.copy():
