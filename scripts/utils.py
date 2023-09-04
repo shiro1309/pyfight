@@ -50,9 +50,9 @@ class Paralax:
             self.scroll.append(0)
         
         
-    def update(self, direction, delta, player):
+    def update(self, direction, delta, wall_colide):
         speed = .2
-        if player.collisions["right"] == False and player.collisions["left"] == False:
+        if wall_colide:
             for i in range(len(self.layer_loc)):
                 self.scroll[i] += direction * speed * delta * 40
                 speed += .2
