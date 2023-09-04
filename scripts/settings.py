@@ -5,6 +5,6 @@ import os
 import sys
 import time
 
-WIN_RES = (640*2, 480*2)
+WIN_RES = (640, 480)
 DISPLAY = [320, 240]
-RENDER_SCALE = 4.0
+FPS = 60

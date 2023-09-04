@@ -3,7 +3,7 @@ import time
 import json
 
 from scripts.settings import *
-from scripts.utils import load_images, Map_creation
+from scripts.utils import load_images
 from scripts.tilemap import Tilemap
 
 RENDER_SCALE = 4.0
@@ -23,14 +23,12 @@ class Editor:
             "grass": load_images("tile/grass"),
             "dirt": load_images("tile/dirt"),
             "vine": load_images("tile/vine"),
+            "spawners": load_images("tile/spawners"),
         }
         
         self.tile_list = list(self.assets)
         self.tile_group = 0
         self.tile_variant = 0
-        
-        #self.map = Map_creation("map/map.png")
-        #self.tilemap = self.map.map_extraction()
         
         self.Display = pg.Surface(DISPLAY)
         self.scroll = [0,0]
@@ -48,7 +46,7 @@ class Editor:
         self.ongrid = True
         
     def update(self):
-        self.clock.tick()
+        self.clock.tick(60)
         
         self.scroll[0] += (self.movment[2] - self.movment[0]) * 2
         self.scroll[1] += (self.movment[3] - self.movment[1]) * 2
@@ -78,8 +76,11 @@ class Editor:
 
     def handle_events(self):
         
-        self.mouse_pos = pg.mouse.get_pos()
-        self.mouse_pos = (self.mouse_pos[0] / RENDER_SCALE, self.mouse_pos[1] / RENDER_SCALE)
+        self.mouse_x, self.mouse_y = pg.mouse.get_pos()
+        screen_value = self.screen.get_size()
+        
+        
+        self.mouse_pos = (self.mouse_x / (screen_value[0] / DISPLAY[0]), self.mouse_y / (screen_value[1] / DISPLAY[1]))
         self.tile_pos = (int((self.mouse_pos[0] + self.scroll[0]) // self.tilemap.tile_size), int((self.mouse_pos[1] + self.scroll[1]) // self.tilemap.tile_size))
         
         if self.clicking and self.ongrid:

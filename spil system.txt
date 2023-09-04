@@ -1,0 +1,14 @@
+spil system:
+
+spill systemet:
+tar seg av å starte spillet.
+og skru av spillet.
+vanskilghets grad endrings meny
+level selector
+fiende beskrivelser
+
+selve spillet:
+er vel ganske oppenbart siden det er spillet og kun spillet
+
+meny_ system: det underligende systemet for spillet tar seg av det vanlige
+lar deg gå ut av menyen og tilbake til enten spillet eller spill systemet

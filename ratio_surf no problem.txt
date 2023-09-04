@@ -1,0 +1,5 @@
+ratio_surf: no problem
+particles: no problem
+player offset: no problem (the rect is smaler than the actual sprite) i forgot that im dum dum
+delta_time: some problems
+wall_slide: fixed since the horizontal momentum ruined the wall jumps 

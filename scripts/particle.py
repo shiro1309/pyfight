@@ -9,16 +9,16 @@ class Particle:
 
     def update(self):
         kill = False
-        self.animation.update()
         if self.animation.done:
             kill = True
         
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
 
+        self.animation.update()
 
         return kill
 
     def render(self, surface, offset=(0,0)):
         img = self.animation.img()
-        surface.blit(img, (self.pos[0] + offset[0] - img.get_width() // 2, self.pos[1] + offset[1] - img.get_height() // 2))
+        surface.blit(img, (self.pos[0] - offset[0] - img.get_width() // 2, self.pos[1] - offset[1] - img.get_height() // 2))
