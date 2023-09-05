@@ -2,10 +2,10 @@ import time
 import random
 
 from scripts.settings import *
-from scripts.entity import *
-from scripts.utils import load_image, load_images, Animation, ratio_surf, Paralax
+from scripts.entity import Player, Enemy
+from scripts.utils import load_image, load_images, Animation, adaptiv_surface, Paralax
 from scripts.tilemap import Tilemap
-from scripts.particle import Particle, multi_render_particles
+from scripts.particle import Particle
 from scripts.spark import Spark
 
 class App:
@@ -13,7 +13,8 @@ class App:
         pg.init()
         self.screen = pg.display.set_mode(WIN_RES, pg.RESIZABLE)
 
-        self.Display = pg.Surface(DISPLAY)
+        self.Display = pg.Surface(DISPLAY, pg.SRCALPHA)
+        self.Display2 = pg.Surface(DISPLAY)
         
         self.movment = [False, False, False, False]
         
@@ -38,13 +39,17 @@ class App:
         self.tilemap = Tilemap(self, tile_size=16)
         
         self.paralax = Paralax("paralax", 4)
-        self.player = Player(self, (50,50), (8,16))
 
-        self.true_start = time.time()
         self.tick = False
-        self.load_level(0)
+        self.level = 0
+        self.screen_shake = 0
+        
+
+        self.load_level(self.level)
+        self.true_start = time.time()
 
     def load_level(self, level_id):
+        self.player = Player(self, (50,50), (8,16))
         
         self.tilemap.load("data/map/" + str(level_id) + ".json")
 
@@ -60,6 +65,8 @@ class App:
         self.sparks = []
 
         self.scroll = [0,0]
+        self.dead = 0
+        self.transision = -30
         
         self.start_time = time.time()
 
@@ -72,12 +79,30 @@ class App:
         self.delta_time = time.time() - self.start_time
         self.start_time = time.time()
 
+        self.screen_shake = max(0, self.screen_shake - 1 * self.delta_time * 60)
+
+        if not len(self.enemies):
+            self.transision += 1 * self.delta_time * 60
+            if self.transision >= 30:
+                self.level = min(self.level + 1, len(os.listdir("data/map")) - 1)
+                self.load_level(self.level)
+        if self.transision < 0:
+            self.transision += 1
+
+        if self.dead >= 1:
+            self.dead += 1
+            if self.dead >= 10:
+                self.transision = min(30, self.transision + 1 * self.delta_time * 60)
+            if self.dead >= 40:
+                self.load_level(self.level)
+
         for enemy in self.enemies.copy():
             kill = enemy.update(self.tilemap, (0,0))
             if kill:
                 self.enemies.remove(enemy)
-
-        self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0))
+        
+        if not self.dead:
+            self.player.update(self.tilemap, (self.movment[2] - self.movment[0], 0))
 
         paralax_y = self.player.collisions["right"] == False and self.player.collisions["left"] == False
         self.paralax.update(self.movment[0] - self.movment[2], self.delta_time, paralax_y)
@@ -98,7 +123,9 @@ class App:
         for enemy in self.enemies.copy():
             enemy.render(self.Display, offset=self.render_scroll)
         
-        self.player.render(self.Display, offset=self.render_scroll)
+        if not self.dead:
+            self.player.render(self.Display, offset=self.render_scroll)
+
         for projectile in self.projectiles.copy():
             projectile[0][0] += projectile[1]  * self.delta_time * 60
             projectile[2] += 1 * self.delta_time * 60
@@ -113,6 +140,8 @@ class App:
             elif abs(self.player.dashing) < 50:
                 if self.player.rect().collidepoint(projectile[0]):
                     self.projectiles.remove(projectile)
+                    self.dead += 1
+                    self.screen_shake = max(16, self.screen_shake)
                     for i in range(30):
                         angle = random.random() * math.pi * 2 
                         speed = random.random() * 5
@@ -125,14 +154,20 @@ class App:
             if kill:
                 self.sparks.remove(spark)
 
-        #multi_render_particles(self.Display, offset=self.render_scroll, particles=self.particles)
         for particle in self.particles.copy():
             kill = particle.update()
             particle.render(self.Display, offset=self.render_scroll)
             if kill:
                 self.particles.remove(particle)
-        
-        ratio_surf(self.screen, self.Display)
+
+        if self.transision:
+            transition_surf = pg.Surface(self.Display.get_size())
+            pg.draw.circle(transition_surf, (255,255,255), (self.Display.get_width() // 2, self.Display.get_height() // 2), (30 - abs(self.transision)) * 8)
+            transition_surf.set_colorkey((255,255,255))
+            self.Display.blit(transition_surf, (0,0))
+
+        screen_shake_offset = (random.random() * self.screen_shake - self.screen_shake / 2, random.random() * self.screen_shake - self.screen_shake / 2)
+        adaptiv_surface(self.screen, self.Display, screen_shake_offset)
 
 
         pg.display.update()

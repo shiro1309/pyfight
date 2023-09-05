@@ -65,7 +65,7 @@ class Paralax:
             for i in range(tiles):
                 surface.blit(self.images[layer],(i*self.bg_width - self.bg_width + self.scroll[layer],0))
 
-def ratio_surf(screen, Display):
+def adaptiv_surface(screen, Display, offset=(0,0)):
     ratio = 320 / 240
     screen_value = screen.get_size()
     screen_ratio = screen_value[0] / screen_value[1]
@@ -79,4 +79,4 @@ def ratio_surf(screen, Display):
         surf = pg.transform.scale(Display, (screen_value[0], win_val))
     else:
         surf = pg.transform.scale(Display, (screen_value[0], screen_value[1]))
-    screen.blit(surf, (screen_value[0]//2-surf.get_width()//2,screen_value[1]//2-surf.get_height()//2))
+    screen.blit(surf, (screen_value[0]//2-surf.get_width()//2 + offset[0],screen_value[1]//2-surf.get_height()//2+offset[1]))
